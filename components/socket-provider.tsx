@@ -1,47 +1,52 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { createContext, useEffect, useState } from "react"
-import { io, type Socket } from "socket.io-client"
+import { createContext, useEffect, useState } from "react";
+import { io, type Socket } from "socket.io-client";
 
 interface SocketContextType {
-  socket: Socket | null
-  isConnected: boolean
+  socket: Socket | null;
+  isConnected: boolean;
 }
 
 export const SocketContext = createContext<SocketContextType>({
   socket: null,
   isConnected: false,
-})
+});
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
-  const [socket, setSocket] = useState<Socket | null>(null)
-  const [isConnected, setIsConnected] = useState(false)
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     // Connect to the WebSocket server
+    console.log("Connecting to WebSocket server...");
     const socketInstance = io("", {
-      path: "/api/socket/io",
+      path: "http://echo.websocket.org/",
       addTrailingSlash: false,
-    })
+    });
 
     socketInstance.on("connect", () => {
-      console.log("Socket connected")
-      setIsConnected(true)
-    })
+      console.log("Socket connected");
+      setIsConnected(true);
+    });
 
     socketInstance.on("disconnect", () => {
-      console.log("Socket disconnected")
-      setIsConnected(false)
-    })
+      console.log("Socket disconnected");
+      setIsConnected(false);
+    });
 
-    setSocket(socketInstance)
+    setSocket(socketInstance);
 
     return () => {
-      socketInstance.disconnect()
-    }
-  }, [])
+      socketInstance.disconnect();
+    };
+  }, []);
 
-  return <SocketContext.Provider value={{ socket, isConnected }}>{children}</SocketContext.Provider>
+  return (
+    <SocketContext.Provider value={{ socket, isConnected }}>
+      {children}
+    </SocketContext.Provider>
+  );
 }
