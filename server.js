@@ -12,7 +12,7 @@ const allowedOrigins = [
   "https://main.maravian.com",
   "https://cblue.maravian.com",
   "https://beta-cblue.maravian.com",
-  "e49d-137-184-179-217.ngrok-free.app",
+  "https://e49d-137-184-179-217.ngrok-free.app",
 ];
 
 // Create Socket.IO server with CORS properly configured
