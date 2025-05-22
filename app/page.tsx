@@ -25,7 +25,8 @@ export default function Home() {
     // Check if user is admin from URL parameter
     const urlParams = new URLSearchParams(window.location.search);
     const admin = urlParams.get("admin") === "true";
-    setIsAdmin(admin);    if (socket) {
+    setIsAdmin(admin);
+    if (socket) {
       socket.on("changeSlide", (slideIndex: number) => {
         setCurrentSlide(slideIndex);
         scrollToTop(); // Scroll to top when slide changes
@@ -61,7 +62,11 @@ export default function Home() {
       const nextSlide = currentSlide + 1;
       setCurrentSlide(nextSlide);
       scrollToTop(); // Scroll to top when moving to next slide
-      socket?.emit("controlSlide", nextSlide);
+
+      // Only emit socket event if presentation is active and user is admin
+      if (isPresentationActive && isAdmin) {
+        socket?.emit("controlSlide", nextSlide);
+      }
     }
   };
 
@@ -70,13 +75,21 @@ export default function Home() {
       const prevSlide = currentSlide - 1;
       setCurrentSlide(prevSlide);
       scrollToTop(); // Scroll to top when moving to previous slide
-      socket?.emit("controlSlide", prevSlide);
+
+      // Only emit socket event if presentation is active and user is admin
+      if (isPresentationActive && isAdmin) {
+        socket?.emit("controlSlide", prevSlide);
+      }
     }
   };
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
     scrollToTop(); // Scroll to top when jumping to a specific slide
-    socket?.emit("controlSlide", index);
+
+    // Only emit socket event if presentation is active and user is admin
+    if (isPresentationActive && isAdmin) {
+      socket?.emit("controlSlide", index);
+    }
   };
 
   const togglePresentation = () => {
@@ -139,27 +152,25 @@ export default function Home() {
                 : "Start Presentation"}
             </button>
           </div>
-        )}
+        )}{" "}
         {/* Navigation dots */}
         <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
           {Array.from({ length: totalSlides }).map((_, index) => (
             <button
               key={index}
-              onClick={() =>
-                (isAdmin || isPresentationActive) && goToSlide(index)
-              }
+              onClick={() => goToSlide(index)}
               className={`w-3 h-3 rounded-full transition-all ${
                 currentSlide === index
                   ? "bg-blue-400 w-6"
                   : "bg-gray-400 opacity-70"
               }`}
-              disabled={!isAdmin && !isPresentationActive}
+              disabled={isPresentationActive && !isAdmin}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
-        </div>
-        {/* Navigation controls - shown for admin and users when presentation is active */}
-        {(isAdmin || isPresentationActive) && (
+        </div>{" "}
+        {/* Navigation controls - shown to admin when presentation is active, or to everyone when not in presentation mode */}
+        {(isAdmin || !isPresentationActive) && (
           <div className="fixed bottom-8 right-8 flex space-x-4 z-20">
             <button
               onClick={handlePrev}
