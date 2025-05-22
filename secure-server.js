@@ -1,8 +1,17 @@
-const { createServer } = require("http");
+const fs = require("fs");
+const path = require("path");
+const https = require("https");
 const { Server } = require("socket.io");
 
-// Create HTTP server
-const httpServer = createServer();
+// Configuration for SSL/TLS (you'll need to update these paths)
+// In production, use proper certificate paths from Let's Encrypt or similar
+const httpsOptions = {
+  key: fs.readFileSync(path.join(__dirname, "ssl", "private-key.pem")),
+  cert: fs.readFileSync(path.join(__dirname, "ssl", "certificate.pem")),
+};
+
+// Create HTTPS server
+const httpsServer = https.createServer(httpsOptions);
 
 // Define allowed origins for better security
 const allowedOrigins = [
@@ -12,11 +21,11 @@ const allowedOrigins = [
   "https://main.maravian.com",
   "https://cblue.maravian.com",
   "https://beta-cblue.maravian.com",
-  "e49d-137-184-179-217.ngrok-free.app",
+  "https://e49d-137-184-179-217.ngrok-free.app",
 ];
 
 // Create Socket.IO server with CORS properly configured
-const io = new Server(httpServer, {
+const io = new Server(httpsServer, {
   cors: {
     origin: function (origin, callback) {
       // Allow requests with no origin (like mobile apps, curl, etc.)
@@ -32,7 +41,6 @@ const io = new Server(httpServer, {
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
     credentials: true,
-    // credentials: false,
   },
   // Enable sticky session support
   transports: ["websocket", "polling"],
@@ -77,8 +85,8 @@ io.on("connection", (socket) => {
 
 // Start server
 const PORT = process.env.PORT || 8051;
-httpServer.listen(PORT, () => {
-  console.log(`Socket.IO server running on port ${PORT}`);
-  console.log(`- Connection URL for clients: ws://localhost:${PORT}`);
+httpsServer.listen(PORT, () => {
+  console.log(`Secure Socket.IO server running on port ${PORT}`);
+  console.log(`- Connection URL for clients: wss://yourdomain.com:${PORT}`);
   console.log("- Press Ctrl+C to stop the server");
 });
