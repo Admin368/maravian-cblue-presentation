@@ -7,10 +7,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, ArrowRight, Monitor } from "lucide-react"
 
-export default function AdminPage() {
-  const [currentSlide, setCurrentSlide] = useState(0)
+export default function AdminPage() {  const [currentSlide, setCurrentSlide] = useState(0)
   const { socket, isConnected } = useSocket()
-  const totalSlides = countries.length + 1 // Welcome + countries
+  const totalSlides = countries.length + 2 // Welcome + countries + thank you
 
   useEffect(() => {
     if (socket) {
@@ -99,10 +98,11 @@ export default function AdminPage() {
             </div>
 
             <div className="rounded-lg border p-4">
-              <h3 className="font-medium mb-2">Current Slide Content:</h3>
-              <p>
+              <h3 className="font-medium mb-2">Current Slide Content:</h3>              <p>
                 {currentSlide === 0
                   ? "Welcome Page"
+                  : currentSlide === totalSlides - 1
+                  ? "Thank You Page"
                   : `${countries[currentSlide - 1].name} - ${countries[currentSlide - 1].landmark}`}
               </p>
             </div>

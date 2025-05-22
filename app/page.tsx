@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import WelcomeSection from "@/components/welcome-section";
 import CountrySection from "@/components/country-section";
+import ThankYouSection from "@/components/thank-you-section";
 import { useSocket } from "@/hooks/use-socket";
 import { Ship } from "@/components/ship-animation";
 import { countries } from "@/data/countries";
@@ -22,15 +23,14 @@ enum ScrollMode {
   DIV_SELECT = "div-select",
 }
 
-export default function Home() {
-  const [currentSlide, setCurrentSlide] = useState(0);
+export default function Home() {  const [currentSlide, setCurrentSlide] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isPresentationActive, setIsPresentationActive] = useState(false);
   const [scrollMode, setScrollMode] = useState<ScrollMode>(ScrollMode.NONE);
   const [targetElement, setTargetElement] = useState<string | null>(null);
   const { socket } = useSocket();
 
-  const totalSlides = countries.length + 1; // Welcome + countries
+  const totalSlides = countries.length + 2; // Welcome + countries + thank you slide
 
   // Function to scroll to top of the page
   const scrollToTop = () => {
@@ -222,8 +222,7 @@ export default function Home() {
       {/* Ship animation */}
       <Ship currentSlide={currentSlide} totalSlides={totalSlides} />
 
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-4 py-8">
+      {/* Content */}      <div className="relative z-10 container mx-auto px-4 py-8">
         <AnimatePresence mode="wait">
           {currentSlide === 0 ? (
             <motion.div
@@ -235,6 +234,17 @@ export default function Home() {
               className="min-h-[calc(100vh-4rem)]"
             >
               <WelcomeSection />
+            </motion.div>
+          ) : currentSlide === totalSlides - 1 ? (
+            <motion.div
+              key="thank-you"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+              className="min-h-[calc(100vh-4rem)]"
+            >
+              <ThankYouSection />
             </motion.div>
           ) : (
             <motion.div
