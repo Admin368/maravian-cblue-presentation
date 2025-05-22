@@ -16,15 +16,19 @@ export default function Home() {
 
   const totalSlides = countries.length + 1; // Welcome + countries
 
+  // Function to scroll to top of the page
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   useEffect(() => {
     // Check if user is admin from URL parameter
     const urlParams = new URLSearchParams(window.location.search);
     const admin = urlParams.get("admin") === "true";
-    setIsAdmin(admin);
-
-    if (socket) {
+    setIsAdmin(admin);    if (socket) {
       socket.on("changeSlide", (slideIndex: number) => {
         setCurrentSlide(slideIndex);
+        scrollToTop(); // Scroll to top when slide changes
       });
 
       socket.on("presentationActiveChange", (isActive: boolean) => {
@@ -48,10 +52,15 @@ export default function Home() {
     }
   }, [socket]);
 
+  useEffect(() => {
+    // Scroll to top whenever the slide changes
+    scrollToTop();
+  }, [currentSlide]);
   const handleNext = () => {
     if (currentSlide < totalSlides - 1) {
       const nextSlide = currentSlide + 1;
       setCurrentSlide(nextSlide);
+      scrollToTop(); // Scroll to top when moving to next slide
       socket?.emit("controlSlide", nextSlide);
     }
   };
@@ -60,11 +69,13 @@ export default function Home() {
     if (currentSlide > 0) {
       const prevSlide = currentSlide - 1;
       setCurrentSlide(prevSlide);
+      scrollToTop(); // Scroll to top when moving to previous slide
       socket?.emit("controlSlide", prevSlide);
     }
   };
   const goToSlide = (index: number) => {
     setCurrentSlide(index);
+    scrollToTop(); // Scroll to top when jumping to a specific slide
     socket?.emit("controlSlide", index);
   };
 
