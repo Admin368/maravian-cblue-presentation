@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import Image from "next/image"
-import { Heart, ThumbsUp, Share2, Camera, Award } from "lucide-react"
-import { useState } from "react"
+import { motion } from "framer-motion";
+import Image from "next/image";
+import { Heart, ThumbsUp, Share2, Camera, Award } from "lucide-react";
+import { useState } from "react";
 
 // Sample gallery images - replace with your actual images
 const galleryImages = [
@@ -13,10 +13,10 @@ const galleryImages = [
   "/placeholder.svg?height=400&width=600",
   "/placeholder.svg?height=400&width=600",
   "/placeholder.svg?height=400&width=600",
-]
+];
 
 export default function ThankYouSection() {
-  const [mainImage, setMainImage] = useState(galleryImages[0])
+  const [mainImage, setMainImage] = useState(galleryImages[0]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -26,7 +26,7 @@ export default function ThankYouSection() {
         staggerChildren: 0.2,
       },
     },
-  }
+  };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
@@ -35,14 +35,14 @@ export default function ThankYouSection() {
       opacity: 1,
       transition: { duration: 0.5 },
     },
-  }
+  };
 
   return (
     <div className="min-h-screen py-12">
-      <motion.div 
-        variants={containerVariants} 
-        initial="hidden" 
-        animate="visible" 
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
         className="max-w-6xl mx-auto"
       >
         <motion.div variants={itemVariants} className="text-center mb-12">
@@ -56,7 +56,9 @@ export default function ThankYouSection() {
             </h3>
           </div>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            We hope you enjoyed learning about these amazing countries and their connections to the Yangtze River through the lens of maritime shipping.
+            We hope you enjoyed learning about these amazing countries and their
+            connections to the Yangtze River through the lens of maritime
+            shipping.
           </p>
         </motion.div>
 
@@ -72,8 +74,7 @@ export default function ThankYouSection() {
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent"></div>
             <div className="absolute bottom-4 left-4 bg-slate-900/70 px-4 py-2 rounded-lg">
               <p className="text-white font-medium flex items-center">
-                <Camera className="w-4 h-4 mr-2" />
-                C Blue Event Highlights
+                <Camera className="w-4 h-4 mr-2" />C Blue Event Highlights
               </p>
             </div>
           </div>
@@ -90,7 +91,9 @@ export default function ThankYouSection() {
               <div
                 key={index}
                 className={`relative rounded-lg overflow-hidden cursor-pointer transition-all ${
-                  mainImage === image ? "ring-2 ring-blue-500 scale-95" : "hover:scale-105"
+                  mainImage === image
+                    ? "ring-2 ring-blue-500 scale-95"
+                    : "hover:scale-105"
                 }`}
                 onClick={() => setMainImage(image)}
                 style={{ height: "120px" }}
@@ -118,7 +121,8 @@ export default function ThankYouSection() {
               Stay Connected
             </h3>
             <p className="text-lg text-gray-300 mb-6">
-              Feel free to reach out with any questions or for future collaborations!
+              Feel free to reach out with any questions or for future
+              collaborations!
             </p>
             <div className="flex justify-center items-center">
               <Share2 className="w-5 h-5 mr-2 text-blue-400" />
@@ -130,5 +134,5 @@ export default function ThankYouSection() {
         </motion.div>
       </motion.div>
     </div>
-  )
+  );
 }

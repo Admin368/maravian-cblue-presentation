@@ -23,7 +23,8 @@ enum ScrollMode {
   DIV_SELECT = "div-select",
 }
 
-export default function Home() {  const [currentSlide, setCurrentSlide] = useState(0);
+export default function Home() {
+  const [currentSlide, setCurrentSlide] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isPresentationActive, setIsPresentationActive] = useState(false);
   const [scrollMode, setScrollMode] = useState<ScrollMode>(ScrollMode.NONE);
@@ -218,11 +219,10 @@ export default function Home() {  const [currentSlide, setCurrentSlide] = useSta
         <div className="absolute bottom-0 w-full h-24 bg-blue-500 animate-wave"></div>
         <div className="absolute bottom-0 w-full h-32 bg-blue-600 animate-wave-slow"></div>
       </div>
-
       {/* Ship animation */}
       <Ship currentSlide={currentSlide} totalSlides={totalSlides} />
-
-      {/* Content */}      <div className="relative z-10 container mx-auto px-4 py-8">
+      {/* Content */}{" "}
+      <div className="relative z-10 container mx-auto px-4 py-8">
         <AnimatePresence mode="wait">
           {currentSlide === 0 ? (
             <motion.div
