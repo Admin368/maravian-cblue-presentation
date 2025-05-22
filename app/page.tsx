@@ -1,57 +1,78 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import WelcomeSection from "@/components/welcome-section"
-import CountrySection from "@/components/country-section"
-import { useSocket } from "@/hooks/use-socket"
-import { Ship } from "@/components/ship-animation"
-import { countries } from "@/data/countries"
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import WelcomeSection from "@/components/welcome-section";
+import CountrySection from "@/components/country-section";
+import { useSocket } from "@/hooks/use-socket";
+import { Ship } from "@/components/ship-animation";
+import { countries } from "@/data/countries";
 
 export default function Home() {
-  const [currentSlide, setCurrentSlide] = useState(0)
-  const [isAdmin, setIsAdmin] = useState(false)
-  const { socket } = useSocket()
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isPresentationActive, setIsPresentationActive] = useState(false);
+  const { socket } = useSocket();
 
-  const totalSlides = countries.length + 1 // Welcome + countries
+  const totalSlides = countries.length + 1; // Welcome + countries
 
   useEffect(() => {
     // Check if user is admin from URL parameter
-    const urlParams = new URLSearchParams(window.location.search)
-    const admin = urlParams.get("admin") === "true"
-    setIsAdmin(admin)
+    const urlParams = new URLSearchParams(window.location.search);
+    const admin = urlParams.get("admin") === "true";
+    setIsAdmin(admin);
 
     if (socket) {
       socket.on("changeSlide", (slideIndex: number) => {
-        setCurrentSlide(slideIndex)
-      })
+        setCurrentSlide(slideIndex);
+      });
+
+      socket.on("presentationActiveChange", (isActive: boolean) => {
+        setIsPresentationActive(isActive);
+      });
+
+      socket.on(
+        "presentationState",
+        (state: { currentSlide: number; isActive: boolean }) => {
+          // When joining, get the current state from the server
+          setCurrentSlide(state.currentSlide);
+          setIsPresentationActive(state.isActive);
+        }
+      );
 
       return () => {
-        socket.off("changeSlide")
-      }
+        socket.off("changeSlide");
+        socket.off("presentationActiveChange");
+        socket.off("presentationState");
+      };
     }
-  }, [socket])
+  }, [socket]);
 
   const handleNext = () => {
     if (currentSlide < totalSlides - 1) {
-      const nextSlide = currentSlide + 1
-      setCurrentSlide(nextSlide)
-      socket?.emit("controlSlide", nextSlide)
+      const nextSlide = currentSlide + 1;
+      setCurrentSlide(nextSlide);
+      socket?.emit("controlSlide", nextSlide);
     }
-  }
+  };
 
   const handlePrev = () => {
     if (currentSlide > 0) {
-      const prevSlide = currentSlide - 1
-      setCurrentSlide(prevSlide)
-      socket?.emit("controlSlide", prevSlide)
+      const prevSlide = currentSlide - 1;
+      setCurrentSlide(prevSlide);
+      socket?.emit("controlSlide", prevSlide);
     }
-  }
-
+  };
   const goToSlide = (index: number) => {
-    setCurrentSlide(index)
-    socket?.emit("controlSlide", index)
-  }
+    setCurrentSlide(index);
+    socket?.emit("controlSlide", index);
+  };
+
+  const togglePresentation = () => {
+    const newState = !isPresentationActive;
+    setIsPresentationActive(newState);
+    socket?.emit("togglePresentation", newState);
+  };
 
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white overflow-hidden">
@@ -90,25 +111,44 @@ export default function Home() {
               <CountrySection country={countries[currentSlide - 1]} />
             </motion.div>
           )}
-        </AnimatePresence>
-
+        </AnimatePresence>{" "}
+        {/* Admin toggle for presentation mode */}
+        {isAdmin && (
+          <div className="fixed top-4 right-4 z-20">
+            <button
+              onClick={togglePresentation}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                isPresentationActive
+                  ? "bg-green-600 hover:bg-green-700"
+                  : "bg-red-600 hover:bg-red-700"
+              } text-white`}
+            >
+              {isPresentationActive
+                ? "Stop Presentation"
+                : "Start Presentation"}
+            </button>
+          </div>
+        )}
         {/* Navigation dots */}
         <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
           {Array.from({ length: totalSlides }).map((_, index) => (
             <button
               key={index}
-              onClick={() => isAdmin && goToSlide(index)}
+              onClick={() =>
+                (isAdmin || isPresentationActive) && goToSlide(index)
+              }
               className={`w-3 h-3 rounded-full transition-all ${
-                currentSlide === index ? "bg-blue-400 w-6" : "bg-gray-400 opacity-70"
+                currentSlide === index
+                  ? "bg-blue-400 w-6"
+                  : "bg-gray-400 opacity-70"
               }`}
-              disabled={!isAdmin}
+              disabled={!isAdmin && !isPresentationActive}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
         </div>
-
-        {/* Admin controls */}
-        {isAdmin && (
+        {/* Navigation controls - shown for admin and users when presentation is active */}
+        {(isAdmin || isPresentationActive) && (
           <div className="fixed bottom-8 right-8 flex space-x-4 z-20">
             <button
               onClick={handlePrev}
@@ -128,5 +168,5 @@ export default function Home() {
         )}
       </div>
     </div>
-  )
+  );
 }

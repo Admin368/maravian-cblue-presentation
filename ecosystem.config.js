@@ -3,7 +3,7 @@ module.exports = {
     {
       name: "maravian-presentation",
       script: "./server.js",
-      watch: false,
+      watch: true,
       instances: 1,
       autorestart: true,
       max_restarts: 10,

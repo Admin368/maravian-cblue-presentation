@@ -41,6 +41,12 @@ const io = new Server(httpServer, {
 // Track connected clients
 const clients = new Set();
 
+// Track global presentation state
+const presentationState = {
+  currentSlide: 0,
+  isActive: false, // Whether the presentation is active for all users
+};
+
 // Socket.IO connection handling
 io.on("connection", (socket) => {
   console.log(`Socket connected: ${socket.id}`);
@@ -49,11 +55,23 @@ io.on("connection", (socket) => {
   // Send current connection count to all clients
   io.emit("clientCount", clients.size);
 
+  // Send current presentation state to the new client
+  socket.emit("presentationState", presentationState);
+
   // Handle slide control events
   socket.on("controlSlide", (slideIndex) => {
     console.log(`Changing slide to: ${slideIndex}`);
+    // Update global state
+    presentationState.currentSlide = slideIndex;
     // Broadcast to all other clients
     io.emit("changeSlide", slideIndex);
+  });
+
+  // Handle presentation mode toggle
+  socket.on("togglePresentation", (isActive) => {
+    console.log(`Presentation active state changed to: ${isActive}`);
+    presentationState.isActive = isActive;
+    io.emit("presentationActiveChange", isActive);
   });
 
   // Handle custom messages
