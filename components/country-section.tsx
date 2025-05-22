@@ -114,132 +114,49 @@ export default function CountrySection({ country }: CountrySectionProps) {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           <motion.div variants={itemVariants} className="order-2 lg:order-1">
+            {" "}
             <div className="space-y-8">
-              {" "}
-              <div
-                id={`${country.id}-similarities`}
-                className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700 relative"
-              >
-                {isAdmin && scrollMode === "div-select" && (
-                  <button
-                    onClick={() =>
-                      handleScrollClick(`${country.id}-similarities`)
-                    }
-                    className="absolute -top-3 -right-3 bg-blue-600 hover:bg-blue-700 text-white p-1 rounded-full z-10"
-                    title="Scroll everyone to this section"
-                  >
-                    <Target className="w-4 h-4" />
-                  </button>
-                )}
-                <div className="flex items-center mb-4">
-                  <div className="bg-blue-500/20 p-2 rounded-lg mr-3">
-                    <Waves className="w-6 h-6 text-blue-400" />
+              {country.bulletSections.map((section) => (
+                <div
+                  key={section.id}
+                  id={`${country.id}-${section.id}`}
+                  className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700 relative"
+                >
+                  {isAdmin && scrollMode === "div-select" && (
+                    <button
+                      onClick={() =>
+                        handleScrollClick(`${country.id}-${section.id}`)
+                      }
+                      className="absolute -top-3 -right-3 bg-blue-600 hover:bg-blue-700 text-white p-1 rounded-full z-10"
+                      title="Scroll everyone to this section"
+                    >
+                      <Target className="w-4 h-4" />
+                    </button>
+                  )}
+                  <div className="flex items-center mb-4">
+                    <div className="bg-blue-500/20 p-2 rounded-lg mr-3">
+                      {section.id === "similarities" ? (
+                        <Waves className="w-6 h-6 text-blue-400" />
+                      ) : section.id === "shipping" ? (
+                        <Ship className="w-6 h-6 text-blue-400" />
+                      ) : section.id === "industries" ? (
+                        <Anchor className="w-6 h-6 text-blue-400" />
+                      ) : (
+                        <MapPin className="w-6 h-6 text-blue-400" />
+                      )}
+                    </div>
+                    <h4 className="text-xl font-semibold">{section.title}</h4>
                   </div>
-                  <h4 className="text-xl font-semibold">
-                    Similarities and Differences
-                  </h4>
+                  <ul className="space-y-2 text-gray-300">
+                    {section.points.map((item, index) => (
+                      <li key={index} className="flex items-start">
+                        <span className="text-blue-400 mr-2">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="space-y-2 text-gray-300">
-                  {country.similarities.map((item, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-blue-400 mr-2">•</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>{" "}
-              <div
-                id={`${country.id}-shipping`}
-                className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700 relative"
-              >
-                {isAdmin && scrollMode === "div-select" && (
-                  <button
-                    onClick={() => handleScrollClick(`${country.id}-shipping`)}
-                    className="absolute -top-3 -right-3 bg-blue-600 hover:bg-blue-700 text-white p-1 rounded-full z-10"
-                    title="Scroll everyone to this section"
-                  >
-                    <Target className="w-4 h-4" />
-                  </button>
-                )}
-                <div className="flex items-center mb-4">
-                  <div className="bg-blue-500/20 p-2 rounded-lg mr-3">
-                    <Ship className="w-6 h-6 text-blue-400" />
-                  </div>
-                  <h4 className="text-xl font-semibold">
-                    Shipping Industry Benefits
-                  </h4>
-                </div>
-                <ul className="space-y-2 text-gray-300">
-                  {country.shipping.map((item, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-blue-400 mr-2">•</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>{" "}
-              <div
-                id={`${country.id}-industries`}
-                className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700 relative"
-              >
-                {isAdmin && scrollMode === "div-select" && (
-                  <button
-                    onClick={() =>
-                      handleScrollClick(`${country.id}-industries`)
-                    }
-                    className="absolute -top-3 -right-3 bg-blue-600 hover:bg-blue-700 text-white p-1 rounded-full z-10"
-                    title="Scroll everyone to this section"
-                  >
-                    <Target className="w-4 h-4" />
-                  </button>
-                )}
-                <div className="flex items-center mb-4">
-                  <div className="bg-blue-500/20 p-2 rounded-lg mr-3">
-                    <Anchor className="w-6 h-6 text-blue-400" />
-                  </div>
-                  <h4 className="text-xl font-semibold">Adjacent Industries</h4>
-                </div>
-                <ul className="space-y-2 text-gray-300">
-                  {country.industries.map((item, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-blue-400 mr-2">•</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>{" "}
-              <div
-                id={`${country.id}-importance`}
-                className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700 relative"
-              >
-                {isAdmin && scrollMode === "div-select" && (
-                  <button
-                    onClick={() =>
-                      handleScrollClick(`${country.id}-importance`)
-                    }
-                    className="absolute -top-3 -right-3 bg-blue-600 hover:bg-blue-700 text-white p-1 rounded-full z-10"
-                    title="Scroll everyone to this section"
-                  >
-                    <Target className="w-4 h-4" />
-                  </button>
-                )}
-                <div className="flex items-center mb-4">
-                  <div className="bg-blue-500/20 p-2 rounded-lg mr-3">
-                    <MapPin className="w-6 h-6 text-blue-400" />
-                  </div>
-                  <h4 className="text-xl font-semibold">
-                    Importance to Country
-                  </h4>
-                </div>
-                <ul className="space-y-2 text-gray-300">
-                  {country.importance.map((item, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-blue-400 mr-2">•</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              ))}
             </div>
           </motion.div>{" "}
           <motion.div
