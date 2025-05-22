@@ -45,6 +45,8 @@ const clients = new Set();
 const presentationState = {
   currentSlide: 0,
   isActive: false, // Whether the presentation is active for all users
+  scrollMode: "none", // Default scroll mode: none, everyscroll, div-select
+  targetElement: null, // Current element to scroll to
 };
 
 // Socket.IO connection handling
@@ -66,12 +68,30 @@ io.on("connection", (socket) => {
     // Broadcast to all other clients
     io.emit("changeSlide", slideIndex);
   });
-
   // Handle presentation mode toggle
   socket.on("togglePresentation", (isActive) => {
     console.log(`Presentation active state changed to: ${isActive}`);
     presentationState.isActive = isActive;
     io.emit("presentationActiveChange", isActive);
+  });
+
+  // Handle scroll mode changes
+  socket.on("setScrollMode", (mode) => {
+    console.log(`Scroll mode changed to: ${mode}`);
+    presentationState.scrollMode = mode;
+    io.emit("scrollModeChange", mode);
+  });
+  // Handle scroll to element events
+  socket.on("scrollToElement", (elementId) => {
+    console.log(`Scrolling to element: ${elementId}`);
+    presentationState.targetElement = elementId;
+    io.emit("scrollToElement", elementId);
+  });
+
+  // Handle scroll position updates from admin
+  socket.on("scrollPosition", (data) => {
+    console.log(`Scroll position update: ${data.percentage.toFixed(2)}%`);
+    io.emit("scrollToPosition", data);
   });
 
   // Handle custom messages
