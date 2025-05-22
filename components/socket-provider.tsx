@@ -18,18 +18,22 @@ export const SocketContext = createContext<SocketContextType>({
 export function SocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-
   useEffect(() => {
     // Connect to the WebSocket server
     console.log("Connecting to WebSocket server...");
-    const socketInstance = io("", {
-      path: "http://echo.websocket.org/",
-      addTrailingSlash: false,
-    });
+    // const socketInstance = io("http://localhost:8051", {
+    //   transports: ["websocket"],
+    //   addTrailingSlash: false,
+    // });
+    const socketInstance = io("http://localhost:8051");
 
     socketInstance.on("connect", () => {
       console.log("Socket connected");
       setIsConnected(true);
+    });
+
+    socketInstance.on("clientCount", (count) => {
+      console.log(`Connected clients: ${count}`);
     });
 
     socketInstance.on("disconnect", () => {
