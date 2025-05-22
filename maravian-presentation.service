@@ -1,0 +1,18 @@
+[Unit]
+Description=Maravian Presentation Node.js Application
+After=network.target
+
+[Service]
+Type=simple
+User=<your-ubuntu-username>
+WorkingDirectory=/path/to/maravian-cblue-presentation
+ExecStart=/usr/bin/node /path/to/maravian-cblue-presentation/server.js
+Restart=on-failure
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=maravian-presentation
+Environment=NODE_ENV=production PORT=8051
+
+[Install]
+WantedBy=multi-user.target
