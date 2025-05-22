@@ -1,7 +1,8 @@
-import type { CountryData } from "@/types"
+import type { CountryData } from "@/types";
 
 export const countries: CountryData[] = [
   {
+    id: "malawi",
     name: "Malawi",
     landmark: "Lake Malawi",
     similarities: [
@@ -25,13 +26,14 @@ export const countries: CountryData[] = [
       "Plays a key role in Malawi's identity and development.",
     ],
     images: [
-      "/placeholder.svg?height=400&width=600",
-      "/placeholder.svg?height=200&width=300",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-gC9spmzUjSjdvNJCRjg6kCwQcw32-dLxJw&s",
+      "https://yellowzebrasafaris.com/media/41513/nkwichi-canoeing-malawi.jpg?width=2048&height=1024&format=jpg&v=1da5e0f7ccdbf70",
       "/placeholder.svg?height=200&width=300",
       "/placeholder.svg?height=200&width=300",
     ],
   },
   {
+    id: "jamaica",
     name: "Jamaica",
     landmark: "Kingston Harbour",
     similarities: [
@@ -62,6 +64,7 @@ export const countries: CountryData[] = [
     ],
   },
   {
+    id: "indonesia",
     name: "Indonesia",
     landmark: "Strait of Malacca",
     similarities: [
@@ -92,6 +95,7 @@ export const countries: CountryData[] = [
     ],
   },
   {
+    id: "ethiopia",
     name: "Ethiopia",
     landmark: "Blue Nile River",
     similarities: [
@@ -121,4 +125,4 @@ export const countries: CountryData[] = [
       "/placeholder.svg?height=200&width=300",
     ],
   },
-]
+];

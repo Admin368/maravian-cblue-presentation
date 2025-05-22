@@ -47,6 +47,7 @@ const presentationState = {
   isActive: false, // Whether the presentation is active for all users
   scrollMode: "none", // Default scroll mode: none, everyscroll, div-select
   targetElement: null, // Current element to scroll to
+  focusedImages: {}, // Track focused images by country ID
 };
 
 // Socket.IO connection handling
@@ -56,9 +57,17 @@ io.on("connection", (socket) => {
 
   // Send current connection count to all clients
   io.emit("clientCount", clients.size);
-
   // Send current presentation state to the new client
   socket.emit("presentationState", presentationState);
+
+  // Send current image focus state for each country
+  if (Object.keys(presentationState.focusedImages).length > 0) {
+    Object.entries(presentationState.focusedImages).forEach(
+      ([countryId, imageIndex]) => {
+        socket.emit("imageFocusChange", { countryId, imageIndex });
+      }
+    );
+  }
 
   // Handle slide control events
   socket.on("controlSlide", (slideIndex) => {
@@ -87,11 +96,21 @@ io.on("connection", (socket) => {
     presentationState.targetElement = elementId;
     io.emit("scrollToElement", elementId);
   });
-
   // Handle scroll position updates from admin
   socket.on("scrollPosition", (data) => {
     console.log(`Scroll position update: ${data.percentage.toFixed(2)}%`);
     io.emit("scrollToPosition", data);
+  });
+
+  // Handle image focus change events
+  socket.on("imageFocusChange", (data) => {
+    console.log(
+      `Image focus change: Country ${data.countryId}, Image index ${data.imageIndex}`
+    );
+    // Update the presentation state
+    presentationState.focusedImages[data.countryId] = data.imageIndex;
+    // Broadcast to all clients
+    io.emit("imageFocusChange", data);
   });
 
   // Handle custom messages

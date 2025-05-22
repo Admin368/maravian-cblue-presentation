@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 
 export default function ScanPage() {
   const [currentImage, setCurrentImage] = useState(0);
-  
+
   // Maritime-themed image URLs
   const backgroundImages = [
     "/placeholder.svg?height=1080&width=1920&text=Ship+at+Sea",
@@ -19,13 +19,13 @@ export default function ScanPage() {
     "/placeholder.svg?height=1080&width=1920&text=Global+Shipping",
     "/placeholder.svg?height=1080&width=1920&text=Port+Infrastructure",
   ];
-  
+
   // Image carousel effect
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % backgroundImages.length);
     }, 5000); // Change image every 5 seconds
-    
+
     return () => clearInterval(interval);
   }, []);
 
@@ -56,8 +56,8 @@ export default function ScanPage() {
             key={index}
             className="absolute inset-0"
             initial={{ opacity: 0 }}
-            animate={{ 
-              opacity: index === currentImage ? 0.15 : 0 
+            animate={{
+              opacity: index === currentImage ? 0.15 : 0,
             }}
             transition={{ duration: 1.5 }}
           >
@@ -71,7 +71,7 @@ export default function ScanPage() {
           </motion.div>
         ))}
       </div>
-      
+
       {/* Content */}
       <motion.div
         variants={containerVariants}
@@ -152,7 +152,8 @@ export default function ScanPage() {
             <Button className="bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white px-8 py-6 rounded-full text-lg font-semibold transition-all shadow-lg hover:shadow-xl">
               Start Presentation
             </Button>
-          </Link>        </motion.div>
+          </Link>{" "}
+        </motion.div>
       </motion.div>
     </div>
   );

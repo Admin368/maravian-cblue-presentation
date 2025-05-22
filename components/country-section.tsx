@@ -14,6 +14,7 @@ interface CountrySectionProps {
 export default function CountrySection({ country }: CountrySectionProps) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [scrollMode, setScrollMode] = useState("none");
+  const [focusedImageIndex, setFocusedImageIndex] = useState(0); // Track the focused image index
   const { socket } = useSocket();
 
   // Check if user is admin
@@ -24,14 +25,41 @@ export default function CountrySection({ country }: CountrySectionProps) {
 
     if (socket) {
       socket.on("scrollModeChange", (mode: string) => {
+        console.log("Scroll mode changed to:", mode);
         setScrollMode(mode);
       });
 
+      // Listen for image focus change events
+      socket.on(
+        "imageFocusChange",
+        (data: { countryId: string; imageIndex: number }) => {
+          if (data.countryId === country.id) {
+            setFocusedImageIndex(data.imageIndex);
+          }
+        }
+      );
+
       return () => {
         socket.off("scrollModeChange");
+        socket.off("imageFocusChange");
       };
     }
-  }, [socket]);
+  }, [socket, country.id]);
+  // Handle thumbnail click to change the focused image
+  const handleImageFocus = (index: number) => {
+    setFocusedImageIndex(index);
+
+    // If admin, send the focus change to everyone
+    if (isAdmin) {
+      console.log(
+        `Admin changing focus to image ${index} for country ${country.id}`
+      );
+      socket?.emit("imageFocusChange", {
+        countryId: country.id,
+        imageIndex: index,
+      });
+    }
+  };
 
   const handleScrollClick = (elementId: string) => {
     if (isAdmin && scrollMode === "div-select") {
@@ -227,24 +255,53 @@ export default function CountrySection({ country }: CountrySectionProps) {
               >
                 <Target className="w-4 h-4" />
               </button>
-            )}
-            <div className="grid grid-cols-2 gap-4 h-full">
-              {country.images.slice(0, 4).map((image, index) => (
-                <div
-                  key={index}
-                  className={`relative rounded-xl overflow-hidden ${
-                    index === 0 ? "col-span-2 row-span-2" : ""
-                  }`}
-                  style={{ height: index === 0 ? "400px" : "190px" }}
-                >
-                  <Image
-                    src={image || "/placeholder.svg"}
-                    alt={`${country.name} - ${country.landmark}`}
-                    fill
-                    className="object-cover transition-transform hover:scale-105 duration-500"
-                  />
-                </div>
-              ))}
+            )}{" "}
+            <div className="space-y-4">
+              {" "}
+              {/* Main focused image */}
+              <div
+                className="relative rounded-xl overflow-hidden"
+                style={{ height: "400px" }}
+              >
+                <Image
+                  src={country.images[focusedImageIndex] || "/placeholder.svg"}
+                  alt={`${country.name} - ${country.landmark}`}
+                  fill
+                  className="object-cover transition-transform duration-500"
+                />
+                {isAdmin && (
+                  <div className="absolute bottom-4 right-4 bg-blue-600/70 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+                    Click thumbnails below to share images
+                  </div>
+                )}
+              </div>
+              {/* Thumbnails */}
+              <div className="grid grid-cols-4 gap-2">
+                {country.images.slice(0, 4).map((image, index) => (
+                  <div
+                    key={index}
+                    className={`relative rounded-xl overflow-hidden cursor-pointer ${
+                      focusedImageIndex === index ? "ring-2 ring-blue-500" : ""
+                    }`}
+                    style={{ height: "90px" }}
+                    onClick={() => handleImageFocus(index)}
+                  >
+                    <Image
+                      src={image || "/placeholder.svg"}
+                      alt={`${country.name} - ${country.landmark} thumbnail`}
+                      fill
+                      className="object-cover transition-transform hover:scale-105 duration-300"
+                    />
+                    {focusedImageIndex === index && (
+                      <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
+                        <div className="bg-blue-600 rounded-full p-1">
+                          <Target className="w-3 h-3 text-white" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </motion.div>
         </div>

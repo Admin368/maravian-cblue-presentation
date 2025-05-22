@@ -18,8 +18,18 @@ export async function GET(req: Request, res: NextApiResponseServerIO) {
         isActive: false,
         scrollMode: "none",
         targetElement: null as string | null,
+        focusedImages: {} as Record<string, number>, // Store focused image by country ID
       }; // Send current state to newly connected clients
       socket.emit("presentationState", presentationState);
+
+      // Send current focused images state to new connections
+      if (Object.keys(presentationState.focusedImages).length > 0) {
+        Object.entries(presentationState.focusedImages).forEach(
+          ([countryId, imageIndex]) => {
+            socket.emit("imageFocusChange", { countryId, imageIndex });
+          }
+        );
+      }
       socket.on("controlSlide", (slideIndex: number) => {
         console.log("Changing slide to:", slideIndex);
         presentationState.currentSlide = slideIndex;
@@ -44,12 +54,21 @@ export async function GET(req: Request, res: NextApiResponseServerIO) {
         presentationState.scrollMode = mode;
         io.emit("scrollModeChange", mode);
       });
-
       socket.on("scrollToElement", (elementId: string) => {
         console.log("Scrolling to element:", elementId);
         presentationState.targetElement = elementId;
         io.emit("scrollToElement", elementId);
       });
+
+      // Handle image focus change event from admin
+      socket.on(
+        "imageFocusChange",
+        (data: { countryId: string; imageIndex: number }) => {
+          console.log("Changing image focus:", data);
+          presentationState.focusedImages[data.countryId] = data.imageIndex;
+          io.emit("imageFocusChange", data);
+        }
+      );
 
       socket.on("disconnect", () => {
         console.log("Socket disconnected:", socket.id);
