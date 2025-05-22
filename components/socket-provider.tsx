@@ -25,7 +25,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     //   transports: ["websocket"],
     //   addTrailingSlash: false,
     // });
-    const socketInstance = io("http://localhost:8051");
+    const socketInstance = io("http://main.maravian.com:8051");
 
     socketInstance.on("connect", () => {
       console.log("Socket connected");
