@@ -10,7 +10,7 @@ const teamMembers = [
   {
     name: "Corey Hakim Johnson",
     country: "Jamaica",
-    school: "",
+    school: "Dalian Maritime University",
     photo: "https://maravianwebservices.com/images/photos/cblue/cjay.jpg",
   },
   {
