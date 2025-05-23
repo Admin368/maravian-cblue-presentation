@@ -14,12 +14,10 @@ import { useState } from "react";
 
 // Sample gallery images - replace with your actual images
 const galleryImages = [
-  "/placeholder.svg?height=400&width=600",
-  "/placeholder.svg?height=400&width=600",
-  "/placeholder.svg?height=400&width=600",
-  "/placeholder.svg?height=400&width=600",
-  "/placeholder.svg?height=400&width=600",
-  "/placeholder.svg?height=400&width=600",
+  "https://maravianwebservices.com/images/photos/cblue/group1.png",
+  "https://maravianwebservices.com/images/photos/cblue/group2.png",
+  "https://maravianwebservices.com/images/photos/cblue/group3.jpg",
+  "https://maravianwebservices.com/images/photos/cblue/group4.jpg",
 ];
 
 export default function ThankYouSection() {
@@ -59,7 +57,7 @@ export default function ThankYouSection() {
           <div className="flex items-center justify-center mb-4">
             <Heart className="w-6 h-6 text-red-400 mr-2" />
             <h3 className="text-3xl font-semibold text-white">
-              C The future, C The The World
+              C The future, C The World
             </h3>
           </div>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
@@ -91,7 +89,7 @@ export default function ThankYouSection() {
         <motion.div variants={itemVariants}>
           <h3 className="text-2xl font-semibold mb-6 flex items-center">
             <Award className="w-6 h-6 mr-2 text-yellow-400" />
-            Event Gallery
+            Winners Team
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {galleryImages.map((image, index) => (

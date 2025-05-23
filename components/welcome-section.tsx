@@ -8,28 +8,46 @@ import { useSocket } from "@/hooks/use-socket";
 
 const teamMembers = [
   {
-    name: "Team Member 1",
-    country: "Malawi",
-    school: "Computer Science School",
-    photo: "/placeholder.svg?height=150&width=150",
-  },
-  {
-    name: "Team Member 2",
+    name: "Corey Hakim Johnson",
     country: "Jamaica",
-    school: "Computer Science School",
-    photo: "/placeholder.svg?height=150&width=150",
+    school: "",
+    photo: "https://maravianwebservices.com/images/photos/cblue/cjay.jpg",
   },
   {
-    name: "Team Member 3",
-    country: "Indonesia",
-    school: "Computer Science School",
-    photo: "/placeholder.svg?height=150&width=150",
+    name: "Paul Ernest Kachule",
+    country: "Malawi",
+    school: "Wuhan University of Technology",
+    photo: "https://maravianwebservices.com/images/photos/csda/Paul Crop.jpg",
   },
   {
-    name: "Team Member 4",
+    name: "Thanaporn Nukhao",
+    country: "Thailand",
+    school: "Dalian maritime university",
+    photo: "https://maravianwebservices.com/images/photos/cblue/fight.jpg",
+  },
+  {
+    name: "Pattaravit Taruwan",
+    country: "Thailand",
+    school: "South west jiao tong University",
+    photo: "https://maravianwebservices.com/images/photos/cblue/mark.jpg",
+  },
+  {
+    name: "SISAY MULETA",
     country: "Ethiopia",
-    school: "Computer Science School",
-    photo: "/placeholder.svg?height=150&width=150",
+    school: "South west jiao tong University",
+    photo: "https://maravianwebservices.com/images/photos/cblue/sis.jpg",
+  },
+  {
+    name: "Fauzia Yasmin",
+    country: "Bangladesh",
+    school: "Wuhan University of Technology",
+    photo: "https://maravianwebservices.com/images/photos/cblue/fauzia.jpg",
+  },
+  {
+    name: "Cyan",
+    country: "China, Hong Kong",
+    school: "Cblue",
+    photo: "https://maravianwebservices.com/images/photos/cblue/",
   },
 ];
 
@@ -158,7 +176,7 @@ export default function WelcomeSection() {
           )}
           <div className="relative w-full h-64 rounded-xl overflow-hidden">
             <Image
-              src="/placeholder.svg?height=400&width=800"
+              src="https://maravianwebservices.com/images/photos/cblue/group1.png"
               alt="Team Winners Group Photo"
               fill
               className="object-cover"

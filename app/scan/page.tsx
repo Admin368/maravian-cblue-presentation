@@ -13,11 +13,10 @@ export default function ScanPage() {
 
   // Maritime-themed image URLs
   const backgroundImages = [
-    "/placeholder.svg?height=1080&width=1920&text=Ship+at+Sea",
-    "/placeholder.svg?height=1080&width=1920&text=Harbor+View",
-    "/placeholder.svg?height=1080&width=1920&text=Maritime+Operations",
-    "/placeholder.svg?height=1080&width=1920&text=Global+Shipping",
-    "/placeholder.svg?height=1080&width=1920&text=Port+Infrastructure",
+    "https://maravianwebservices.com/images/photos/cblue/group1.png",
+    "https://maravianwebservices.com/images/photos/cblue/group2.png",
+    "https://maravianwebservices.com/images/photos/cblue/group3.jpg",
+    "https://maravianwebservices.com/images/photos/cblue/group4.jpg",
   ];
 
   // Image carousel effect
