@@ -48,6 +48,8 @@ const presentationState = {
   scrollMode: "none", // Default scroll mode: none, everyscroll, div-select
   targetElement: null, // Current element to scroll to
   focusedImages: {}, // Track focused images by country ID
+  qaEnabled: false, // Whether Q&A is enabled
+  qaMessages: [], // Array to store Q&A messages
 };
 
 // Socket.IO connection handling
@@ -56,9 +58,11 @@ io.on("connection", (socket) => {
   clients.add(socket.id);
 
   // Send current connection count to all clients
-  io.emit("clientCount", clients.size);
-  // Send current presentation state to the new client
-  socket.emit("presentationState", presentationState);
+  io.emit("clientCount", clients.size); // Send current presentation state to the new client
+  socket.emit("presentationState", {
+    ...presentationState,
+    qaMessages: presentationState.qaMessages, // Include QA messages
+  });
 
   // Send current image focus state for each country
   if (Object.keys(presentationState.focusedImages).length > 0) {
@@ -112,7 +116,6 @@ io.on("connection", (socket) => {
     // Broadcast to all clients
     io.emit("imageFocusChange", data);
   });
-
   // Handle custom messages
   socket.on("message", (data) => {
     console.log(`Message from ${socket.id}:`, data);
@@ -122,6 +125,33 @@ io.on("connection", (socket) => {
       timestamp: new Date().toISOString(),
       ...data,
     });
+  });
+
+  // Handle Q&A messages
+  socket.on("qa-message", (data) => {
+    console.log(`Q&A message from ${socket.id}:`, data);
+
+    // Create Q&A message with ID and timestamp
+    const qaMessage = {
+      id: Math.random().toString(36).substring(2, 15),
+      socketId: socket.id,
+      timestamp: new Date().toISOString(),
+      question: data.question,
+      userName: data.userName || "Anonymous",
+    };
+
+    // Add to the messages array
+    presentationState.qaMessages.push(qaMessage);
+
+    // Broadcast to all clients
+    io.emit("qa-message-received", qaMessage);
+  });
+
+  // Handle Q&A toggle
+  socket.on("toggle-qa", (enabled) => {
+    console.log(`Q&A feature toggled to: ${enabled}`);
+    presentationState.qaEnabled = enabled;
+    io.emit("qa-status-change", enabled);
   });
 
   // Handle disconnection

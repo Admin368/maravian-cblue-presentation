@@ -8,13 +8,19 @@ import ThankYouSection from "@/components/thank-you-section";
 import { useSocket } from "@/hooks/use-socket";
 import { Ship } from "@/components/ship-animation";
 import { countries } from "@/data/countries";
-import { Check } from "lucide-react";
+import { Check, MessageSquare } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  QAButton,
+  QAModal,
+  QANotification,
+  QASidebar,
+} from "@/components/qa-components";
 
 // Enum for scroll modes
 enum ScrollMode {
@@ -29,6 +35,19 @@ export default function Home() {
   const [isPresentationActive, setIsPresentationActive] = useState(false);
   const [scrollMode, setScrollMode] = useState<ScrollMode>(ScrollMode.NONE);
   const [targetElement, setTargetElement] = useState<string | null>(null);
+  const [isQAEnabled, setIsQAEnabled] = useState(false);
+  const [qaModalOpen, setQaModalOpen] = useState(false);
+  const [qaSidebarOpen, setQaSidebarOpen] = useState(false);
+  const [qaMessages, setQaMessages] = useState<
+    Array<{
+      id: string;
+      socketId: string;
+      question: string;
+      userName: string;
+      timestamp: string;
+    }>
+  >([]);
+  const [qaNotification, setQaNotification] = useState<string | null>(null);
   const { socket } = useSocket();
 
   const totalSlides = countries.length + 2; // Welcome + countries + thank you slide
@@ -60,6 +79,30 @@ export default function Home() {
         setTargetElement(elementId);
       });
 
+      // QA event handlers
+      socket.on("qa-status-change", (enabled: boolean) => {
+        setIsQAEnabled(enabled);
+      });
+
+      socket.on(
+        "qa-message-received",
+        (message: {
+          id: string;
+          socketId: string;
+          question: string;
+          userName: string;
+          timestamp: string;
+        }) => {
+          setQaMessages((prev) => [...prev, message]);
+
+          // Show notification
+          setQaNotification(`New question from ${message.userName}`);
+          setTimeout(() => {
+            setQaNotification(null);
+          }, 3000);
+        }
+      );
+
       socket.on(
         "presentationState",
         (state: {
@@ -67,12 +110,22 @@ export default function Home() {
           isActive: boolean;
           scrollMode?: ScrollMode;
           targetElement?: string | null;
+          qaEnabled?: boolean;
+          qaMessages?: Array<{
+            id: string;
+            socketId: string;
+            question: string;
+            userName: string;
+            timestamp: string;
+          }>;
         }) => {
           // When joining, get the current state from the server
           setCurrentSlide(state.currentSlide);
           setIsPresentationActive(state.isActive);
           if (state.scrollMode) setScrollMode(state.scrollMode);
           if (state.targetElement) setTargetElement(state.targetElement);
+          if (state.qaEnabled !== undefined) setIsQAEnabled(state.qaEnabled);
+          if (state.qaMessages) setQaMessages(state.qaMessages);
         }
       );
 
@@ -82,6 +135,8 @@ export default function Home() {
         socket.off("scrollToElement");
         socket.off("scrollModeChange");
         socket.off("presentationState");
+        socket.off("qa-status-change");
+        socket.off("qa-message-received");
       };
     }
   }, [socket]);
@@ -199,7 +254,6 @@ export default function Home() {
       socket?.emit("setScrollMode", mode);
     }
   };
-
   const handleScrollToElement = (elementId: string) => {
     if (isPresentationActive && isAdmin) {
       socket?.emit("scrollToElement", elementId);
@@ -212,6 +266,33 @@ export default function Home() {
     }
   };
 
+  // QA related functions
+  const toggleQAFeature = () => {
+    if (isAdmin && socket) {
+      const newStatus = !isQAEnabled;
+      socket.emit("toggle-qa", newStatus);
+      setIsQAEnabled(newStatus);
+    }
+  };
+
+  const toggleQAView = () => {
+    setQaModalOpen(true);
+  };
+
+  const submitQuestion = (question: string, userName: string) => {
+    if (socket && question.trim()) {
+      socket.emit("qa-message", {
+        question,
+        userName: userName || "Anonymous",
+      });
+
+      // Show confirmation toast
+      setQaNotification("Your question has been submitted!");
+      setTimeout(() => {
+        setQaNotification(null);
+      }, 3000);
+    }
+  };
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white overflow-hidden">
       {/* Ocean waves background */}
@@ -221,6 +302,25 @@ export default function Home() {
       </div>
       {/* Ship animation */}
       <Ship currentSlide={currentSlide} totalSlides={totalSlides} />
+      {/* QA Components */}
+      <QANotification message={qaNotification} />
+      <QAButton
+        isAdmin={isAdmin}
+        isQAEnabled={isQAEnabled}
+        toggleQAView={toggleQAView}
+        toggleQAFeature={isAdmin ? toggleQAFeature : undefined}
+      />
+      <QAModal
+        isOpen={qaModalOpen}
+        onClose={() => setQaModalOpen(false)}
+        onSubmit={submitQuestion}
+        isQAEnabled={isQAEnabled}
+      />
+      <QASidebar
+        isOpen={qaSidebarOpen}
+        onClose={() => setQaSidebarOpen(false)}
+        messages={qaMessages}
+      />
       {/* Content */}{" "}
       <div className="relative z-10 container mx-auto px-4 py-8">
         <AnimatePresence mode="wait">
@@ -259,76 +359,92 @@ export default function Home() {
             </motion.div>
           )}
         </AnimatePresence>{" "}
-        {/* Admin controls */}
-        {isAdmin && (
-          <div className="fixed top-4 right-4 z-20 flex items-center space-x-4">
-            {/* Scroll mode dropdown */}{" "}
-            {isPresentationActive && (
-              <div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
-                    Scroll Mode: {scrollMode}
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-52">
-                    <DropdownMenuItem
-                      onClick={() => changeScrollMode(ScrollMode.NONE)}
-                    >
-                      <span className="font-medium">None</span>
-                      {scrollMode === ScrollMode.NONE && (
-                        <Check className="w-4 h-4 ml-auto" />
-                      )}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => changeScrollMode(ScrollMode.EVERY_SCROLL)}
-                    >
-                      <span className="font-medium">Every Scroll</span>
-                      {scrollMode === ScrollMode.EVERY_SCROLL && (
-                        <Check className="w-4 h-4 ml-auto" />
-                      )}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => changeScrollMode(ScrollMode.DIV_SELECT)}
-                    >
-                      <span className="font-medium">Div Select</span>
-                      {scrollMode === ScrollMode.DIV_SELECT && (
-                        <Check className="w-4 h-4 ml-auto" />
-                      )}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <div className="bg-slate-800/80 text-xs mt-2 p-2 rounded absolute right-0 w-52">
-                  {scrollMode === ScrollMode.NONE && (
-                    <p>Users control their own scrolling</p>
-                  )}
-                  {scrollMode === ScrollMode.EVERY_SCROLL && (
-                    <p>
-                      All users' views follow your scrolling position in
-                      real-time
-                    </p>
-                  )}
-                  {scrollMode === ScrollMode.DIV_SELECT && (
-                    <p>
-                      Click on element badges to focus users' view on specific
-                      sections
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
+        {/* Admin controls */} {/* Admin controls */}
+        <div className="fixed top-4 right-4 z-20 flex items-center space-x-4">
+          {/* QA message viewer button */}
+          {(isAdmin || isQAEnabled) && qaMessages.length > 0 && (
             <button
-              onClick={togglePresentation}
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                isPresentationActive
-                  ? "bg-green-600 hover:bg-green-700"
-                  : "bg-red-600 hover:bg-red-700"
-              } text-white`}
+              onClick={() => setQaSidebarOpen(true)}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center"
             >
-              {isPresentationActive
-                ? "Stop Presentation"
-                : "Start Presentation"}
+              <MessageSquare className="w-4 h-4 mr-2" />
+              View Questions {qaMessages.length > 0 && `(${qaMessages.length})`}
             </button>
-          </div>
-        )}{" "}
+          )}
+
+          {/* Admin controls */}
+          {isAdmin && (
+            <div className="flex items-center space-x-4">
+              {/* Scroll mode dropdown */}{" "}
+              {isPresentationActive && (
+                <div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+                      Scroll Mode: {scrollMode}
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-52">
+                      <DropdownMenuItem
+                        onClick={() => changeScrollMode(ScrollMode.NONE)}
+                      >
+                        <span className="font-medium">None</span>
+                        {scrollMode === ScrollMode.NONE && (
+                          <Check className="w-4 h-4 ml-auto" />
+                        )}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          changeScrollMode(ScrollMode.EVERY_SCROLL)
+                        }
+                      >
+                        <span className="font-medium">Every Scroll</span>
+                        {scrollMode === ScrollMode.EVERY_SCROLL && (
+                          <Check className="w-4 h-4 ml-auto" />
+                        )}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => changeScrollMode(ScrollMode.DIV_SELECT)}
+                      >
+                        <span className="font-medium">Div Select</span>
+                        {scrollMode === ScrollMode.DIV_SELECT && (
+                          <Check className="w-4 h-4 ml-auto" />
+                        )}
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <div className="bg-slate-800/80 text-xs mt-2 p-2 rounded absolute right-0 w-52">
+                    {scrollMode === ScrollMode.NONE && (
+                      <p>Users control their own scrolling</p>
+                    )}
+                    {scrollMode === ScrollMode.EVERY_SCROLL && (
+                      <p>
+                        All users' views follow your scrolling position in
+                        real-time
+                      </p>
+                    )}
+                    {scrollMode === ScrollMode.DIV_SELECT && (
+                      <p>
+                        Click on element badges to focus users' view on specific
+                        sections
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+              <button
+                onClick={togglePresentation}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  isPresentationActive
+                    ? "bg-green-600 hover:bg-green-700"
+                    : "bg-red-600 hover:bg-red-700"
+                } text-white`}
+              >
+                {isPresentationActive
+                  ? "Stop Presentation"
+                  : "Start Presentation"}
+              </button>
+            </div>
+          )}
+        </div>{" "}
         {/* Navigation dots */}
         <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
           {Array.from({ length: totalSlides }).map((_, index) => (

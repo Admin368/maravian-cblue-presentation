@@ -2,7 +2,14 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Heart, ThumbsUp, Share2, Camera, Award } from "lucide-react";
+import {
+  Heart,
+  ThumbsUp,
+  Share2,
+  Camera,
+  Award,
+  MessageSquare,
+} from "lucide-react";
 import { useState } from "react";
 
 // Sample gallery images - replace with your actual images
@@ -52,7 +59,7 @@ export default function ThankYouSection() {
           <div className="flex items-center justify-center mb-4">
             <Heart className="w-6 h-6 text-red-400 mr-2" />
             <h3 className="text-3xl font-semibold text-white">
-              For Joining Our Presentation
+              C The future, C The The World
             </h3>
           </div>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
@@ -116,6 +123,7 @@ export default function ThankYouSection() {
 
         {/* Final message */}
         <motion.div variants={itemVariants} className="text-center mt-16">
+          {" "}
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-8 border border-slate-700">
             <h3 className="text-2xl font-semibold mb-4 text-blue-300">
               Stay Connected
@@ -124,11 +132,20 @@ export default function ThankYouSection() {
               Feel free to reach out with any questions or for future
               collaborations!
             </p>
-            <div className="flex justify-center items-center">
-              <Share2 className="w-5 h-5 mr-2 text-blue-400" />
-              <span className="text-gray-300">
-                Share your thoughts about the presentation
-              </span>
+            <div className="flex flex-col items-center space-y-4">
+              <div className="flex items-center">
+                <Share2 className="w-5 h-5 mr-2 text-blue-400" />
+                <span className="text-gray-300">
+                  Share your thoughts about the presentation
+                </span>
+              </div>
+              <a
+                href="/qa"
+                className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all"
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Visit Q&A Page
+              </a>
             </div>
           </div>
         </motion.div>
