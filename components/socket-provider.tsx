@@ -21,11 +21,19 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Connect to the WebSocket server
     console.log("Connecting to WebSocket server...");
-    // const socketInstance = io("http://localhost:8051", {
+
+    // Determine the connection URL based on the environment
+    const isProduction = window.location.protocol === "https:";
+    // const socketInstance = io(socketUrl, {
     //   transports: ["websocket"],
-    //   addTrailingSlash: false,
+    //   withCredentials: true,
     // });
-    const socketInstance = io("http://main.maravian.com:8051");
+
+    const socketInstance = isProduction
+      ? io("https://main.maravian.com", {
+          path: "/8051/socket.io",
+        })
+      : io("http://localhost:8051");
 
     socketInstance.on("connect", () => {
       console.log("Socket connected");
