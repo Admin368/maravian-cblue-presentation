@@ -47,7 +47,7 @@ const teamMembers = [
     name: "Cyan",
     country: "China, Hong Kong",
     school: "Cblue",
-    photo: "https://maravianwebservices.com/images/photos/cblue/",
+    photo: "https://maravianwebservices.com/images/photos/cblue/cyan.jpg",
   },
 ];
 

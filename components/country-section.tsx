@@ -194,7 +194,7 @@ export default function CountrySection({ country }: CountrySectionProps) {
               </div>
               {/* Thumbnails */}
               <div className="grid grid-cols-4 gap-2">
-                {country.images.slice(0, 4).map((image, index) => (
+                {country.images.slice(0, 8).map((image, index) => (
                   <div
                     key={index}
                     className={`relative rounded-xl overflow-hidden cursor-pointer ${

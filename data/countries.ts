@@ -49,7 +49,8 @@ export const countries: CountryData[] = [
         ],
       },
     ],
-  },  {
+  },
+  {
     id: "jamaica",
     name: "Jamaica",
     landmark: "Kingston Harbour, Jamaica West Indies",
@@ -97,7 +98,8 @@ export const countries: CountryData[] = [
         ],
       },
     ],
-  },  {
+  },
+  {
     id: "thailand",
     name: "Thailand",
     landmark: "Chao Phraya River",
@@ -145,7 +147,8 @@ export const countries: CountryData[] = [
         ],
       },
     ],
-  },  {
+  },
+  {
     id: "ethiopia",
     name: "Ethiopia",
     landmark: "Blue Nile River",
