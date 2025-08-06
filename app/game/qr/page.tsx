@@ -12,13 +12,14 @@ export default function QRCodePage() {
 
   useEffect(() => {
     // Determine the base URL based on environment
-    const isProduction = process.env.NODE_ENV === "production" || 
-                         window.location.hostname !== "localhost";
-    
-    const baseUrl = isProduction 
+    const isProduction =
+      process.env.NODE_ENV === "production" ||
+      window.location.hostname !== "192.168.1.168";
+
+    const baseUrl = isProduction
       ? "https://cblue.maravian.com"
       : `${window.location.protocol}//${window.location.host}`;
-    
+
     const fullStudentUrl = `${baseUrl}/game/home`;
     setStudentUrl(fullStudentUrl);
 
@@ -28,11 +29,11 @@ export default function QRCodePage() {
       margin: 2,
       color: {
         dark: "#1F2937",
-        light: "#FFFFFF"
-      }
+        light: "#FFFFFF",
+      },
     })
-    .then(url => setQrCodeUrl(url))
-    .catch(err => console.error("Error generating QR code:", err));
+      .then((url) => setQrCodeUrl(url))
+      .catch((err) => console.error("Error generating QR code:", err));
   }, []);
 
   const copyToClipboard = async () => {
@@ -49,13 +50,19 @@ export default function QRCodePage() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white relative overflow-hidden">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.4\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"4\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')" }}></div>
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              'url(\'data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.4"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\')',
+          }}
+        ></div>
       </div>
 
       <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-12">
-          <motion.h1 
+          <motion.h1
             className="text-6xl font-bold mb-4 bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 bg-clip-text text-transparent"
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -63,7 +70,7 @@ export default function QRCodePage() {
           >
             🌍 Join the Game! 📱
           </motion.h1>
-          <motion.p 
+          <motion.p
             className="text-2xl text-gray-300"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -92,8 +99,8 @@ export default function QRCodePage() {
                   </h2>
                   {qrCodeUrl && (
                     <div className="bg-white p-6 rounded-2xl inline-block">
-                      <img 
-                        src={qrCodeUrl} 
+                      <img
+                        src={qrCodeUrl}
                         alt="QR Code for joining the game"
                         className="w-80 h-80 mx-auto"
                       />
@@ -110,24 +117,36 @@ export default function QRCodePage() {
                     </h3>
                     <div className="space-y-4 text-lg">
                       <div className="flex items-start space-x-4">
-                        <span className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">1</span>
+                        <span className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
+                          1
+                        </span>
                         <div>
                           <p className="font-semibold">Open your camera app</p>
-                          <p className="text-gray-300 text-base">Point your phone camera at the QR code</p>
+                          <p className="text-gray-300 text-base">
+                            Point your phone camera at the QR code
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-start space-x-4">
-                        <span className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">2</span>
+                        <span className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
+                          2
+                        </span>
                         <div>
                           <p className="font-semibold">Tap the notification</p>
-                          <p className="text-gray-300 text-base">Your phone will show a link to open</p>
+                          <p className="text-gray-300 text-base">
+                            Your phone will show a link to open
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-start space-x-4">
-                        <span className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">3</span>
+                        <span className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
+                          3
+                        </span>
                         <div>
                           <p className="font-semibold">Join your team</p>
-                          <p className="text-gray-300 text-base">Enter your name and team to start playing</p>
+                          <p className="text-gray-300 text-base">
+                            Enter your name and team to start playing
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -167,19 +186,29 @@ export default function QRCodePage() {
           <Card className="p-6 bg-black/30 backdrop-blur-sm border border-blue-500/30 text-center">
             <Users className="w-12 h-12 text-blue-400 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-blue-400 mb-2">Team Play</h3>
-            <p className="text-gray-300">Work together with your teammates to identify landmarks</p>
+            <p className="text-gray-300">
+              Work together with your teammates to identify landmarks
+            </p>
           </Card>
-          
+
           <Card className="p-6 bg-black/30 backdrop-blur-sm border border-green-500/30 text-center">
             <Globe className="w-12 h-12 text-green-400 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-green-400 mb-2">World Landmarks</h3>
-            <p className="text-gray-300">Explore famous landmarks from around the globe</p>
+            <h3 className="text-xl font-bold text-green-400 mb-2">
+              World Landmarks
+            </h3>
+            <p className="text-gray-300">
+              Explore famous landmarks from around the globe
+            </p>
           </Card>
-          
+
           <Card className="p-6 bg-black/30 backdrop-blur-sm border border-purple-500/30 text-center">
             <QrCode className="w-12 h-12 text-purple-400 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-purple-400 mb-2">Easy Access</h3>
-            <p className="text-gray-300">Just scan and play - no app downloads needed</p>
+            <h3 className="text-xl font-bold text-purple-400 mb-2">
+              Easy Access
+            </h3>
+            <p className="text-gray-300">
+              Just scan and play - no app downloads needed
+            </p>
           </Card>
         </motion.div>
 

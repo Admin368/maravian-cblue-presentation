@@ -55,6 +55,7 @@ export default function GamePage() {
   const [showResults, setShowResults] = useState(false);
   const [gameResults, setGameResults] = useState<any>(null);
   const [isTeacher, setIsTeacher] = useState(false);
+  const [isStartingGame, setIsStartingGame] = useState(false);
 
   const { socket } = useSocket();
 
@@ -131,7 +132,24 @@ export default function GamePage() {
   };
 
   const startGame = () => {
-    socket?.emit("game-toggle", true);
+    // Auto-load questions if not already loaded
+    if (gameState.questions.length === 0) {
+      loadQuestions();
+      // Wait for questions to load before starting the game
+      setTimeout(() => {
+        socket?.emit("game-toggle", true);
+        // Automatically start the first question when the game starts
+        setTimeout(() => {
+          socket?.emit("game-next-question");
+        }, 300);
+      }, 800); // Give time for questions to load
+    } else {
+      socket?.emit("game-toggle", true);
+      // Automatically start the first question when the game starts
+      setTimeout(() => {
+        socket?.emit("game-next-question");
+      }, 500); // Small delay to ensure game state is updated
+    }
   };
 
   const stopGame = () => {

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSocket } from "@/hooks/use-socket";
-import { Hand, Users, Trophy, Zap } from "lucide-react";
+import { Hand, Users, Trophy, Zap, LogOut, Edit3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -62,6 +62,17 @@ export default function StudentPage() {
     // Generate random student ID
     const id = Math.random().toString(36).substring(2, 15);
     setStudentId(id);
+
+    // Load saved user data from localStorage
+    const savedName = localStorage.getItem('game-student-name');
+    const savedTeam = localStorage.getItem('game-student-team');
+    
+    if (savedName) {
+      setStudentName(savedName);
+    }
+    if (savedTeam) {
+      setSelectedTeam(savedTeam);
+    }
 
     if (socket) {
       // Game event listeners
@@ -128,12 +139,39 @@ export default function StudentPage() {
 
   const joinGame = () => {
     if (studentName.trim() && selectedTeam && socket) {
+      // Save to localStorage
+      localStorage.setItem('game-student-name', studentName.trim());
+      localStorage.setItem('game-student-team', selectedTeam);
+      
       socket.emit("game-join", {
         studentId,
         name: studentName.trim(),
         team: selectedTeam,
       });
       setHasJoined(true);
+    }
+  };
+
+  const logout = () => {
+    // Clear localStorage
+    localStorage.removeItem('game-student-name');
+    localStorage.removeItem('game-student-team');
+    
+    // Reset state
+    setHasJoined(false);
+    setStudentName('');
+    setSelectedTeam('');
+    setCurrentQuestion(null);
+    setCanAnswer(false);
+    setAnswerResult(null);
+    
+    // Disconnect from socket if needed
+    if (socket) {
+      socket.disconnect();
+      // Reconnect for next user
+      setTimeout(() => {
+        socket.connect();
+      }, 100);
     }
   };
 
@@ -254,6 +292,24 @@ export default function StudentPage() {
       </div>
 
       <div className="container mx-auto px-4 py-8 relative z-10">
+        {/* Logout Button */}
+        <div className="absolute top-4 right-4">
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Button
+              onClick={logout}
+              variant="outline"
+              className="bg-red-600/20 border-red-500/30 text-red-300 hover:bg-red-600/40 hover:text-white transition-all duration-200"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
+          </motion.div>
+        </div>
+
         {/* Header */}
         <div className="text-center mb-8">
           <motion.h1 

@@ -33,7 +33,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       ? io("https://main.maravian.com", {
           path: "/8051/socket.io",
         })
-      : io("http://localhost:8051");
+      : io("http://192.168.1.168:8051");
 
     socketInstance.on("connect", () => {
       console.log("Socket connected");
