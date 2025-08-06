@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import WelcomeSection from "@/components/welcome-section";
 import CountrySection from "@/components/country-section";
 import ThankYouSection from "@/components/thank-you-section";
@@ -21,6 +22,7 @@ import {
   QANotification,
   QASidebar,
 } from "@/components/qa-components";
+import { Button } from "@/components/ui/button";
 
 // Enum for scroll modes
 enum ScrollMode {
@@ -359,6 +361,15 @@ export default function Home() {
             </motion.div>
           )}
         </AnimatePresence>{" "}
+        {/* Game Link */}
+        <div className="fixed top-4 left-4 z-20">
+          <Link href="/game/home">
+            <Button className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105">
+              🌍 Play Game
+            </Button>
+          </Link>
+        </div>
+
         {/* Admin controls */} {/* Admin controls */}
         <div className="fixed top-4 right-4 z-20 flex items-center space-x-4">
           {/* QA message viewer button */}
