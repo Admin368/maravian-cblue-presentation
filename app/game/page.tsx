@@ -63,6 +63,7 @@ export default function GamePage() {
   const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(
     new Set()
   );
+  const [answerLog, setAnswerLog] = useState<any[]>([]);
 
   const { socket } = useSocket();
 
@@ -97,6 +98,22 @@ export default function GamePage() {
           teams: result.teams,
           showAnswer: true,
         }));
+
+        // Track answered questions and add to answer log
+        if (result.answerer && currentQuestion) {
+          setAnsweredQuestions(prev => new Set([...prev, currentQuestion.questionNumber - 1]));
+          const logEntry = {
+            id: Date.now().toString(),
+            studentName: result.answerer.name,
+            team: result.answerer.team,
+            country: currentQuestion.landmark.country,
+            points: result.points || 0,
+            isCorrect: result.isCorrect,
+            timestamp: new Date(),
+            questionNumber: currentQuestion.questionNumber,
+          };
+          setAnswerLog(prev => [logEntry, ...prev.slice(0, 9)]); // Keep last 10 entries
+        }
       });
 
       socket.on("game-finished", (results: any) => {
@@ -124,6 +141,7 @@ export default function GamePage() {
       socket.on("questions-list", (questions: Landmark[]) => {
         setQuestionsList(questions);
       });
+
 
       return () => {
         socket.off("game-state");
@@ -207,6 +225,10 @@ export default function GamePage() {
 
   const requestQuestionsList = () => {
     socket?.emit("get-questions-list");
+  };
+
+  const toggleQRCode = () => {
+    socket?.emit("toggle-qr-code");
   };
 
   // Get sorted teams for leaderboard
@@ -301,6 +323,14 @@ export default function GamePage() {
                     Show Questions
                   </Button>
                 )}
+
+                {/* QR Code Toggle */}
+                <Button
+                  onClick={toggleQRCode}
+                  className="bg-pink-600 hover:bg-pink-700"
+                >
+                  Show QR Code
+                </Button>
               </div>
 
               {/* Game Controls */}
@@ -365,9 +395,11 @@ export default function GamePage() {
                       <Button
                         key={index}
                         onClick={() => jumpToQuestion(index)}
-                        className={`text-xs p-2 h-auto ${
+                        className={`text-xs p-2 h-auto relative ${
                           gameState.currentQuestion === index
                             ? "bg-yellow-600 hover:bg-yellow-700 border-2 border-yellow-400"
+                            : answeredQuestions.has(index)
+                            ? "bg-green-600 hover:bg-green-700 border border-green-400"
                             : "bg-gray-600 hover:bg-gray-700"
                         }`}
                         title={`${question.name}, ${question.country}`}
@@ -579,25 +611,72 @@ export default function GamePage() {
               </div>
             </motion.div>
 
-            {/* Instructions */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
-              className="p-6 bg-blue-500/20 backdrop-blur-sm rounded-xl border border-blue-500/30"
-            >
-              <h3 className="text-xl font-bold mb-3 text-blue-400">
-                How to Play
-              </h3>
-              <ul className="space-y-2 text-sm text-gray-300">
-                <li>• Look at the landmark image</li>
-                <li>• Press "I Have Answer" to be selected</li>
-                <li>• Guess the country in English</li>
-                <li>• Get 1 point for correct country</li>
-                <li>• Get 2 points for detailed explanation</li>
-                <li>• First to answer gets the chance!</li>
-              </ul>
-            </motion.div>
+            {/* Answer Log for Teachers */}
+            {isTeacher ? (
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 }}
+                className="p-6 bg-green-500/20 backdrop-blur-sm rounded-xl border border-green-500/30 overflow-hidden"
+              >
+                <h3 className="text-xl font-bold mb-3 text-green-400">
+                  📝 Answer Log
+                </h3>
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {answerLog.length === 0 ? (
+                    <div className="text-center text-gray-400 py-4">
+                      <div className="text-2xl mb-2">📝</div>
+                      <div className="text-sm">Answers will appear here</div>
+                    </div>
+                  ) : (
+                    answerLog.map((entry) => (
+                      <motion.div
+                        key={entry.id}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className={`p-3 rounded-lg ${
+                          entry.isCorrect
+                            ? "bg-green-600/30 border border-green-500/50"
+                            : "bg-red-600/30 border border-red-500/50"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="font-bold text-sm truncate">{entry.studentName}</div>
+                          <div className={`text-xs px-2 py-1 rounded ${
+                            entry.isCorrect ? "bg-green-500/30 text-green-300" : "bg-red-500/30 text-red-300"
+                          }`}>
+                            {entry.isCorrect ? `+${entry.points}` : "0"}
+                          </div>
+                        </div>
+                        <div className="text-xs text-gray-400 mb-1">{entry.team}</div>
+                        <div className="text-xs font-bold">{entry.country.toUpperCase()}</div>
+                        <div className="text-xs text-gray-500">Q{entry.questionNumber}</div>
+                      </motion.div>
+                    ))
+                  )}
+                </div>
+              </motion.div>
+            ) : (
+              /* Instructions for Students */
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 }}
+                className="p-6 bg-blue-500/20 backdrop-blur-sm rounded-xl border border-blue-500/30"
+              >
+                <h3 className="text-xl font-bold mb-3 text-blue-400">
+                  How to Play
+                </h3>
+                <ul className="space-y-2 text-sm text-gray-300">
+                  <li>• Look at the landmark image</li>
+                  <li>• Press "I Have Answer" to be selected</li>
+                  <li>• Guess the country in English</li>
+                  <li>• Get 1 point for correct country</li>
+                  <li>• Get 2 points for detailed explanation</li>
+                  <li>• First to answer gets the chance!</li>
+                </ul>
+              </motion.div>
+            )}
           </div>
         </div>
       </div>
