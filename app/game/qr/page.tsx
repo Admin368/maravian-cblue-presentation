@@ -14,13 +14,13 @@ export default function QRCodePage() {
     // Determine the base URL based on environment
     const isProduction =
       process.env.NODE_ENV === "production" ||
-      window.location.hostname !== "192.168.1.168";
+      window.location.hostname !== "localhost";
 
     const baseUrl = isProduction
       ? "https://cblue.maravian.com"
-      : `${window.location.protocol}//${window.location.host}`;
+      : "http://192.168.1.168:3000";
 
-    const fullStudentUrl = `${baseUrl}/game/home`;
+    const fullStudentUrl = `${baseUrl}/game/student`;
     setStudentUrl(fullStudentUrl);
 
     // Generate QR code
@@ -68,164 +68,48 @@ export default function QRCodePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            🌍 Join the Game! 📱
+            Scan to Join the Game
           </motion.h1>
-          <motion.p
-            className="text-2xl text-gray-300"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-          >
-            Scan the QR code with your phone to join the landmark quiz
-          </motion.p>
         </div>
 
         {/* Main QR Code Card */}
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-md mx-auto">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5, duration: 0.8 }}
           >
-            <Card className="p-12 bg-black/40 backdrop-blur-sm border-2 border-purple-500/30 text-center">
-              <div className="grid md:grid-cols-2 gap-12 items-center">
-                {/* QR Code */}
-                <div className="space-y-6">
-                  <div className="flex justify-center">
-                    <QrCode className="w-16 h-16 text-yellow-400 mb-4" />
+            <Card className="p-8 bg-black/40 backdrop-blur-sm border-2 border-purple-500/30 text-center">
+              {/* QR Code */}
+              <div className="flex flex-col items-center justify-center space-y-6">
+                {qrCodeUrl && (
+                  <div className="bg-white p-6 rounded-2xl inline-block">
+                    <img
+                      src={qrCodeUrl}
+                      alt="QR Code for joining the game"
+                      className="w-80 h-80 mx-auto"
+                    />
                   </div>
-                  <h2 className="text-3xl font-bold text-yellow-400 mb-6">
-                    Scan to Join
-                  </h2>
-                  {qrCodeUrl && (
-                    <div className="bg-white p-6 rounded-2xl inline-block">
-                      <img
-                        src={qrCodeUrl}
-                        alt="QR Code for joining the game"
-                        className="w-80 h-80 mx-auto"
-                      />
-                    </div>
-                  )}
-                </div>
+                )}
 
-                {/* Instructions */}
-                <div className="space-y-8 text-left">
-                  <div>
-                    <h3 className="text-2xl font-bold text-purple-400 mb-6 flex items-center">
-                      <Smartphone className="w-8 h-8 mr-3" />
-                      How to Join
-                    </h3>
-                    <div className="space-y-4 text-lg">
-                      <div className="flex items-start space-x-4">
-                        <span className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
-                          1
-                        </span>
-                        <div>
-                          <p className="font-semibold">Open your camera app</p>
-                          <p className="text-gray-300 text-base">
-                            Point your phone camera at the QR code
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-4">
-                        <span className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
-                          2
-                        </span>
-                        <div>
-                          <p className="font-semibold">Tap the notification</p>
-                          <p className="text-gray-300 text-base">
-                            Your phone will show a link to open
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-4">
-                        <span className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
-                          3
-                        </span>
-                        <div>
-                          <p className="font-semibold">Join your team</p>
-                          <p className="text-gray-300 text-base">
-                            Enter your name and team to start playing
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Manual URL Option */}
-                  <div className="bg-gray-800/50 p-6 rounded-xl">
-                    <h4 className="text-lg font-bold text-blue-400 mb-3 flex items-center">
-                      <Globe className="w-5 h-5 mr-2" />
-                      Or visit manually:
-                    </h4>
-                    <div className="flex items-center space-x-2">
-                      <code className="bg-gray-900 px-3 py-2 rounded text-sm text-green-400 flex-1 break-all">
-                        {studentUrl}
-                      </code>
-                      <button
-                        onClick={copyToClipboard}
-                        className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium transition-colors"
-                      >
-                        Copy
-                      </button>
-                    </div>
+                {/* Manual URL Option */}
+                <div className="w-full bg-gray-800/50 p-4 rounded-xl mt-4">
+                  <div className="flex items-center space-x-2">
+                    <code className="bg-gray-900 px-3 py-2 rounded text-sm text-green-400 flex-1 break-all">
+                      {studentUrl}
+                    </code>
+                    <button
+                      onClick={copyToClipboard}
+                      className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium transition-colors"
+                    >
+                      Copy
+                    </button>
                   </div>
                 </div>
               </div>
             </Card>
           </motion.div>
         </div>
-
-        {/* Game Info */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.8 }}
-          className="mt-12 grid md:grid-cols-3 gap-6 max-w-4xl mx-auto"
-        >
-          <Card className="p-6 bg-black/30 backdrop-blur-sm border border-blue-500/30 text-center">
-            <Users className="w-12 h-12 text-blue-400 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-blue-400 mb-2">Team Play</h3>
-            <p className="text-gray-300">
-              Work together with your teammates to identify landmarks
-            </p>
-          </Card>
-
-          <Card className="p-6 bg-black/30 backdrop-blur-sm border border-green-500/30 text-center">
-            <Globe className="w-12 h-12 text-green-400 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-green-400 mb-2">
-              World Landmarks
-            </h3>
-            <p className="text-gray-300">
-              Explore famous landmarks from around the globe
-            </p>
-          </Card>
-
-          <Card className="p-6 bg-black/30 backdrop-blur-sm border border-purple-500/30 text-center">
-            <QrCode className="w-12 h-12 text-purple-400 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-purple-400 mb-2">
-              Easy Access
-            </h3>
-            <p className="text-gray-300">
-              Just scan and play - no app downloads needed
-            </p>
-          </Card>
-        </motion.div>
-
-        {/* Teacher Access Link */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.8 }}
-          className="text-center mt-12"
-        >
-          <a
-            href="/teacher"
-            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105"
-          >
-            🎓 Teacher Access
-          </a>
-        </motion.div>
       </div>
     </div>
   );

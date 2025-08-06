@@ -6,6 +6,7 @@ import { useSocket } from "@/hooks/use-socket";
 import { Crown, Users, MapPin, Clock, Trophy, QrCode } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import QRCodeLib from "qrcode";
 
 interface Team {
   score: number;
@@ -64,10 +65,48 @@ export default function PresentationPage() {
   );
   const [showResults, setShowResults] = useState(false);
   const [gameResults, setGameResults] = useState<any>(null);
-  const [showQRCode, setShowQRCode] = useState(false);
+  const [showQRCode, setShowQRCode] = useState(true); // Show by default
   const [answerLog, setAnswerLog] = useState<AnswerLog[]>([]);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
+  const [studentUrl, setStudentUrl] = useState<string>("");
 
   const { socket } = useSocket();
+
+  useEffect(() => {
+    // Generate QR code URL
+    const isProduction =
+      process.env.NODE_ENV === "production" ||
+      (typeof window !== "undefined" &&
+        window.location.hostname !== "localhost");
+
+    const baseUrl = isProduction
+      ? "https://cblue.maravian.com"
+      : "http://192.168.1.168:3000";
+
+    const fullStudentUrl = `${baseUrl}/game/student`;
+    setStudentUrl(fullStudentUrl);
+
+    // Generate QR code
+    QRCodeLib.toDataURL(fullStudentUrl, {
+      width: 400,
+      margin: 2,
+      color: {
+        dark: "#1F2937",
+        light: "#FFFFFF",
+      },
+    })
+      .then((url) => setQrCodeUrl(url))
+      .catch((err) => console.error("Error generating QR code:", err));
+  }, []);
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(studentUrl);
+      alert("URL copied to clipboard!");
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
 
   useEffect(() => {
     if (socket) {
@@ -83,6 +122,7 @@ export default function PresentationPage() {
       socket.on("question-display", (questionData: QuestionData) => {
         setCurrentQuestion(questionData);
         setShowResults(false);
+        setShowQRCode(false); // Hide QR code when question appears
       });
 
       socket.on("student-answering", (answerer: any) => {
@@ -240,22 +280,32 @@ export default function PresentationPage() {
                     exit={{ opacity: 0, scale: 0.8 }}
                     className="h-full flex flex-col items-center justify-center text-center"
                   >
-                    <QrCode className="w-24 h-24 mb-6 text-blue-400" />
-                    <h2 className="text-3xl font-bold mb-4 text-blue-400">
-                      Join the Game!
+                    <h2 className="text-4xl font-bold mb-6 text-yellow-400">
+                      Scan to Join the Game
                     </h2>
-                    <div className="text-xl text-gray-300 mb-6">
-                      Scan QR code or visit:
-                    </div>
-                    <div className="text-2xl font-bold text-yellow-400 bg-black/50 p-4 rounded-lg">
-                      {typeof window !== "undefined"
-                        ? window.location.origin
-                        : ""}
-                      /game/student
-                    </div>
-                    {/* QR Code placeholder - you can integrate a real QR code library */}
-                    <div className="mt-6 w-48 h-48 bg-white rounded-lg flex items-center justify-center">
-                      <div className="text-black font-bold">QR CODE</div>
+
+                    {qrCodeUrl && (
+                      <div className="bg-white p-6 rounded-2xl inline-block mb-6">
+                        <img
+                          src={qrCodeUrl}
+                          alt="QR Code for joining the game"
+                          className="w-64 h-64 mx-auto"
+                        />
+                      </div>
+                    )}
+
+                    <div className="bg-gray-800/50 p-4 rounded-xl max-w-md">
+                      <div className="flex items-center space-x-2">
+                        <code className="bg-gray-900 px-3 py-2 rounded text-sm text-green-400 flex-1 break-all">
+                          {studentUrl}
+                        </code>
+                        <button
+                          onClick={copyToClipboard}
+                          className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-sm font-medium transition-colors"
+                        >
+                          Copy
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 ) : showResults && gameResults ? (
@@ -362,7 +412,9 @@ export default function PresentationPage() {
                     className="h-full flex flex-col items-center justify-center text-center"
                   >
                     <div className="text-6xl mb-4">🎮</div>
-                    <h2 className="text-3xl font-bold mb-4">Ready to Play!</h2>
+                    <h2 className="text-3xl font-bold mb-4 text-white">
+                      Ready to Play!
+                    </h2>
                     <p className="text-xl text-gray-300">
                       {gameState.isActive
                         ? "Waiting for the first question..."

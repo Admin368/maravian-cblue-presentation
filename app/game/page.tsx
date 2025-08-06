@@ -157,7 +157,7 @@ export default function GamePage() {
         socket.off("questions-list");
       };
     }
-  }, [socket]);
+  }, [socket, currentQuestion]);
 
   const loadQuestions = () => {
     // Shuffle landmarks data that's already imported
