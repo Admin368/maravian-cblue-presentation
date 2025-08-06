@@ -55,6 +55,8 @@ export default function StudentPage() {
   const [currentQuestion, setCurrentQuestion] = useState<QuestionData | null>(null);
   const [canAnswer, setCanAnswer] = useState(false);
   const [answerResult, setAnswerResult] = useState<any>(null);
+  const [hasAlreadyAnswered, setHasAlreadyAnswered] = useState(false);
+  const [alreadyAnsweredMessage, setAlreadyAnsweredMessage] = useState("");
 
   const { socket } = useSocket();
 
@@ -88,6 +90,9 @@ export default function StudentPage() {
         setCurrentQuestion(questionData);
         setCanAnswer(true);
         setAnswerResult(null);
+        // Reset already answered state for new question
+        setHasAlreadyAnswered(false);
+        setAlreadyAnsweredMessage("");
       });
 
       socket.on("student-answering", (answerer: any) => {
@@ -124,6 +129,27 @@ export default function StudentPage() {
         setCanAnswer(false);
       });
 
+      // Listen for already answered event (one-student mode)
+      socket.on("already-answered", (data: any) => {
+        console.log("Already answered:", data);
+        setHasAlreadyAnswered(true);
+        setCanAnswer(false);
+        setAlreadyAnsweredMessage(data.message || "You have already answered in this game session.");
+      });
+
+      // Listen for one-student mode changes
+      socket.on("one-student-mode-toggled", (enabled: boolean) => {
+        console.log("One student mode:", enabled);
+        if (!enabled) {
+          // If one-student mode is disabled, reset already answered state
+          setHasAlreadyAnswered(false);
+          setAlreadyAnsweredMessage("");
+          if (currentQuestion && !gameState.currentAnswerer) {
+            setCanAnswer(true);
+          }
+        }
+      });
+
       return () => {
         socket.off("game-state");
         socket.off("teams-updated");
@@ -133,6 +159,8 @@ export default function StudentPage() {
         socket.off("answerer-cleared");
         socket.off("game-status-change");
         socket.off("game-finished");
+        socket.off("already-answered");
+        socket.off("one-student-mode-toggled");
       };
     }
   }, [socket]);
@@ -387,8 +415,24 @@ export default function StudentPage() {
                       Which country is this landmark in?
                     </h3>
 
-                    {/* Answer Button */}
-                    {!gameState.currentAnswerer && canAnswer ? (
+                    {/* Answer Button or Already Answered Message */}
+                    {hasAlreadyAnswered ? (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="p-6 bg-orange-500/20 rounded-xl border-2 border-orange-500/50"
+                      >
+                        <div className="text-center">
+                          <div className="text-4xl mb-4">🚫</div>
+                          <h3 className="text-xl font-bold text-orange-400 mb-2">
+                            Already Answered!
+                          </h3>
+                          <p className="text-gray-300">
+                            {alreadyAnsweredMessage}
+                          </p>
+                        </div>
+                      </motion.div>
+                    ) : !gameState.currentAnswerer && canAnswer ? (
                       <motion.div
                         initial={{ scale: 0.8 }}
                         animate={{ scale: 1 }}

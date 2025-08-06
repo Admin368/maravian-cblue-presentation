@@ -50,12 +50,19 @@ export default function GamePage() {
     currentAnswerer: null,
     showAnswer: false,
   });
-  
-  const [currentQuestion, setCurrentQuestion] = useState<QuestionData | null>(null);
+
+  const [currentQuestion, setCurrentQuestion] = useState<QuestionData | null>(
+    null
+  );
   const [showResults, setShowResults] = useState(false);
   const [gameResults, setGameResults] = useState<any>(null);
   const [isTeacher, setIsTeacher] = useState(false);
   const [isStartingGame, setIsStartingGame] = useState(false);
+  const [oneStudentMode, setOneStudentMode] = useState(false);
+  const [questionsList, setQuestionsList] = useState<Landmark[]>([]);
+  const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(
+    new Set()
+  );
 
   const { socket } = useSocket();
 
@@ -72,7 +79,7 @@ export default function GamePage() {
       });
 
       socket.on("teams-updated", (teams: Record<string, Team>) => {
-        setGameState(prev => ({ ...prev, teams }));
+        setGameState((prev) => ({ ...prev, teams }));
       });
 
       socket.on("question-display", (questionData: QuestionData) => {
@@ -81,14 +88,14 @@ export default function GamePage() {
       });
 
       socket.on("student-answering", (answerer: any) => {
-        setGameState(prev => ({ ...prev, currentAnswerer: answerer }));
+        setGameState((prev) => ({ ...prev, currentAnswerer: answerer }));
       });
 
       socket.on("answer-result", (result: any) => {
-        setGameState(prev => ({ 
-          ...prev, 
+        setGameState((prev) => ({
+          ...prev,
           teams: result.teams,
-          showAnswer: true 
+          showAnswer: true,
         }));
       });
 
@@ -98,16 +105,24 @@ export default function GamePage() {
       });
 
       socket.on("answerer-cleared", () => {
-        setGameState(prev => ({ ...prev, currentAnswerer: null }));
+        setGameState((prev) => ({ ...prev, currentAnswerer: null }));
       });
 
       socket.on("game-status-change", (isActive: boolean) => {
-        setGameState(prev => ({ ...prev, isActive }));
+        setGameState((prev) => ({ ...prev, isActive }));
       });
 
       socket.on("questions-loaded", (count: number) => {
         console.log(`Questions loaded: ${count} questions`);
         // The questions are loaded on the server, update local state if needed
+      });
+
+      socket.on("one-student-mode-toggled", (enabled: boolean) => {
+        setOneStudentMode(enabled);
+      });
+
+      socket.on("questions-list", (questions: Landmark[]) => {
+        setQuestionsList(questions);
       });
 
       return () => {
@@ -120,14 +135,18 @@ export default function GamePage() {
         socket.off("answerer-cleared");
         socket.off("game-status-change");
         socket.off("questions-loaded");
+        socket.off("one-student-mode-toggled");
+        socket.off("questions-list");
       };
     }
   }, [socket]);
 
   const loadQuestions = () => {
     // Shuffle landmarks data that's already imported
-    const shuffled = [...landmarks].sort(() => Math.random() - 0.5).slice(0, 15);
-    console.log('Loading questions:', shuffled.length, 'landmarks');
+    const shuffled = [...landmarks]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 15);
+    console.log("Loading questions:", shuffled.length, "landmarks");
     socket?.emit("game-load-questions", shuffled);
   };
 
@@ -162,6 +181,10 @@ export default function GamePage() {
     socket?.emit("game-next-question");
   };
 
+  const previousQuestion = () => {
+    socket?.emit("game-previous-question");
+  };
+
   const approveAnswer = (points: number) => {
     socket?.emit("game-answer-result", { isCorrect: true, points });
   };
@@ -174,22 +197,40 @@ export default function GamePage() {
     socket?.emit("game-clear-answerer");
   };
 
+  const toggleOneStudentMode = () => {
+    socket?.emit("toggle-one-student-mode");
+  };
+
+  const jumpToQuestion = (questionIndex: number) => {
+    socket?.emit("jump-to-question", questionIndex);
+  };
+
+  const requestQuestionsList = () => {
+    socket?.emit("get-questions-list");
+  };
+
   // Get sorted teams for leaderboard
   const sortedTeams = Object.entries(gameState.teams)
-    .sort(([,a], [,b]) => b.score - a.score)
+    .sort(([, a], [, b]) => b.score - a.score)
     .map(([name, data]) => ({ name, ...data }));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white relative overflow-hidden">
       {/* Background pattern */}
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%239C92AC\" fill-opacity=\"0.4\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"4\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')" }}></div>
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              'url(\'data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.4"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\')',
+          }}
+        ></div>
       </div>
 
       <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Header */}
         <div className="text-center mb-8">
-          <motion.h1 
+          <motion.h1
             className="text-6xl font-bold mb-4 bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 bg-clip-text text-transparent"
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -197,7 +238,7 @@ export default function GamePage() {
           >
             🌍 Guess the Country! 🏛️
           </motion.h1>
-          <motion.p 
+          <motion.p
             className="text-xl text-gray-300"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -209,30 +250,73 @@ export default function GamePage() {
 
         {/* Game Status & Controls */}
         {isTeacher && (
-          <motion.div 
+          <motion.div
             className="mb-8 p-6 bg-black/30 rounded-xl backdrop-blur-sm"
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5, duration: 0.8 }}
           >
-            <h2 className="text-2xl font-bold mb-4 text-yellow-400">Teacher Controls</h2>
-            <div className="flex gap-4 flex-wrap">
-              <Button 
-                onClick={loadQuestions}
-                className="bg-blue-600 hover:bg-blue-700"
-                disabled={gameState.isActive}
-              >
-                Load Questions
-              </Button>
-              <Button 
-                onClick={gameState.isActive ? stopGame : startGame}
-                className={gameState.isActive ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"}
-              >
-                {gameState.isActive ? "Stop Game" : "Start Game"}
-              </Button>
+            <h2 className="text-2xl font-bold mb-4 text-yellow-400">
+              Teacher Controls
+            </h2>
+            <div className="space-y-4">
+              {/* Main Game Controls */}
+              <div className="flex gap-4 flex-wrap">
+                <Button
+                  onClick={loadQuestions}
+                  className="bg-blue-600 hover:bg-blue-700"
+                  disabled={gameState.isActive}
+                >
+                  Load Questions
+                </Button>
+                <Button
+                  onClick={gameState.isActive ? stopGame : startGame}
+                  className={
+                    gameState.isActive
+                      ? "bg-red-600 hover:bg-red-700"
+                      : "bg-green-600 hover:bg-green-700"
+                  }
+                >
+                  {gameState.isActive ? "Stop Game" : "Start Game"}
+                </Button>
+
+                {/* One Student Mode Toggle */}
+                <Button
+                  onClick={toggleOneStudentMode}
+                  className={
+                    oneStudentMode
+                      ? "bg-orange-600 hover:bg-orange-700"
+                      : "bg-gray-600 hover:bg-gray-700"
+                  }
+                >
+                  {oneStudentMode ? "One Student ON" : "One Student OFF"}
+                </Button>
+
+                {/* Get Questions List */}
+                {gameState.questions.length > 0 && (
+                  <Button
+                    onClick={requestQuestionsList}
+                    className="bg-cyan-600 hover:bg-cyan-700"
+                  >
+                    Show Questions
+                  </Button>
+                )}
+              </div>
+
+              {/* Game Controls */}
               {gameState.isActive && (
-                <>
-                  <Button 
+                <div className="flex gap-4 flex-wrap">
+                  <Button
+                    onClick={previousQuestion}
+                    className="bg-indigo-600 hover:bg-indigo-700"
+                    disabled={
+                      !gameState.questions.length ||
+                      gameState.currentQuestion <= 0
+                    }
+                  >
+                    Previous Question
+                  </Button>
+                  <Button
                     onClick={nextQuestion}
                     className="bg-purple-600 hover:bg-purple-700"
                     disabled={!gameState.questions.length}
@@ -241,25 +325,25 @@ export default function GamePage() {
                   </Button>
                   {gameState.currentAnswerer && (
                     <>
-                      <Button 
+                      <Button
                         onClick={() => approveAnswer(1)}
                         className="bg-green-500 hover:bg-green-600"
                       >
                         Correct (+1 pt)
                       </Button>
-                      <Button 
+                      <Button
                         onClick={() => approveAnswer(2)}
                         className="bg-green-400 hover:bg-green-500"
                       >
                         Excellent (+2 pts)
                       </Button>
-                      <Button 
+                      <Button
                         onClick={rejectAnswer}
                         className="bg-red-500 hover:bg-red-600"
                       >
                         Incorrect
                       </Button>
-                      <Button 
+                      <Button
                         onClick={clearAnswerer}
                         className="bg-gray-500 hover:bg-gray-600"
                       >
@@ -267,7 +351,37 @@ export default function GamePage() {
                       </Button>
                     </>
                   )}
-                </>
+                </div>
+              )}
+
+              {/* Questions Navigation */}
+              {isTeacher && questionsList.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="text-lg font-semibold mb-3 text-cyan-400">
+                    Questions Navigation
+                  </h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 max-h-40 overflow-y-auto">
+                    {questionsList.map((question, index) => (
+                      <Button
+                        key={index}
+                        onClick={() => jumpToQuestion(index)}
+                        className={`text-xs p-2 h-auto ${
+                          gameState.currentQuestion === index
+                            ? "bg-yellow-600 hover:bg-yellow-700 border-2 border-yellow-400"
+                            : "bg-gray-600 hover:bg-gray-700"
+                        }`}
+                        title={`${question.name}, ${question.country}`}
+                      >
+                        <div className="flex flex-col items-center">
+                          <span className="font-bold">Q{index + 1}</span>
+                          <span className="text-xs truncate w-full">
+                            {question.country}
+                          </span>
+                        </div>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
           </motion.div>
@@ -289,10 +403,14 @@ export default function GamePage() {
                   <Crown className="w-20 h-20 mx-auto mb-4 text-yellow-300" />
                   <h2 className="text-4xl font-bold mb-6">Game Over!</h2>
                   <div className="text-2xl mb-4">
-                    🏆 Winner: <span className="font-bold">{gameResults.winner.name}</span>
+                    🏆 Winner:{" "}
+                    <span className="font-bold">{gameResults.winner.name}</span>
                   </div>
                   <div className="text-xl">
-                    Final Score: <span className="font-bold">{gameResults.winner.score} points</span>
+                    Final Score:{" "}
+                    <span className="font-bold">
+                      {gameResults.winner.score} points
+                    </span>
                   </div>
                 </motion.div>
               ) : currentQuestion ? (
@@ -305,13 +423,18 @@ export default function GamePage() {
                 >
                   <div className="mb-6">
                     <div className="text-lg text-gray-300 mb-2">
-                      Question {currentQuestion.questionNumber} of {currentQuestion.totalQuestions}
+                      Question {currentQuestion.questionNumber} of{" "}
+                      {currentQuestion.totalQuestions}
                     </div>
                     <div className="w-full bg-gray-700 rounded-full h-3">
-                      <div 
+                      <div
                         className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
-                        style={{ 
-                          width: `${(currentQuestion.questionNumber / currentQuestion.totalQuestions) * 100}%` 
+                        style={{
+                          width: `${
+                            (currentQuestion.questionNumber /
+                              currentQuestion.totalQuestions) *
+                            100
+                          }%`,
                         }}
                       />
                     </div>
@@ -319,17 +442,33 @@ export default function GamePage() {
 
                   <Card className="p-8 bg-black/40 backdrop-blur-sm border-2 border-purple-500/30">
                     <div className="mb-6">
-                      <img 
+                      <img
                         src={currentQuestion.landmark.image_url}
                         alt="Mystery landmark"
                         className="w-full max-w-2xl mx-auto rounded-2xl shadow-2xl transform hover:scale-105 transition-transform duration-300"
                       />
                     </div>
-                    
+
                     <h3 className="text-3xl font-bold mb-4 text-yellow-400">
                       Which country is this landmark in?
                     </h3>
-                    
+
+                    {/* Teacher Answer Display - Always visible to teacher */}
+                    {isTeacher && currentQuestion && (
+                      <div className="mt-4 p-4 bg-gray-800/50 rounded-lg border border-gray-600">
+                        <h4 className="text-sm font-semibold text-gray-300 mb-2">
+                          Teacher Answer:
+                        </h4>
+                        <div className="text-lg font-bold text-green-400">
+                          <MapPin className="inline w-5 h-5 mr-2" />
+                          {currentQuestion.landmark.country.toUpperCase()}
+                        </div>
+                        <div className="text-sm text-gray-400 mt-1">
+                          {currentQuestion.landmark.name}
+                        </div>
+                      </div>
+                    )}
+
                     {gameState.showAnswer && (
                       <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
@@ -357,8 +496,8 @@ export default function GamePage() {
                   <div className="text-6xl mb-4">🎮</div>
                   <h2 className="text-3xl font-bold mb-4">Ready to Play!</h2>
                   <p className="text-xl text-gray-300">
-                    {gameState.isActive 
-                      ? "Waiting for the first question..." 
+                    {gameState.isActive
+                      ? "Waiting for the first question..."
                       : "Game will start soon!"}
                   </p>
                 </motion.div>
@@ -380,8 +519,12 @@ export default function GamePage() {
                   Now Answering
                 </h3>
                 <div className="text-center">
-                  <div className="text-2xl font-bold">{gameState.currentAnswerer.name}</div>
-                  <div className="text-lg text-gray-300">{gameState.currentAnswerer.team}</div>
+                  <div className="text-2xl font-bold">
+                    {gameState.currentAnswerer.name}
+                  </div>
+                  <div className="text-lg text-gray-300">
+                    {gameState.currentAnswerer.team}
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -405,14 +548,20 @@ export default function GamePage() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 * index }}
                     className={`flex justify-between items-center p-4 rounded-lg ${
-                      index === 0 
-                        ? "bg-gradient-to-r from-yellow-500/30 to-orange-500/30 border-2 border-yellow-500/50" 
+                      index === 0
+                        ? "bg-gradient-to-r from-yellow-500/30 to-orange-500/30 border-2 border-yellow-500/50"
                         : "bg-gray-700/50"
                     }`}
                   >
                     <div className="flex items-center">
                       <span className="text-2xl mr-3">
-                        {index === 0 ? "👑" : index === 1 ? "🥈" : index === 2 ? "🥉" : "🏅"}
+                        {index === 0
+                          ? "👑"
+                          : index === 1
+                          ? "🥈"
+                          : index === 2
+                          ? "🥉"
+                          : "🏅"}
                       </span>
                       <div>
                         <div className="font-bold text-lg">{team.name}</div>
@@ -437,7 +586,9 @@ export default function GamePage() {
               transition={{ delay: 0.4 }}
               className="p-6 bg-blue-500/20 backdrop-blur-sm rounded-xl border border-blue-500/30"
             >
-              <h3 className="text-xl font-bold mb-3 text-blue-400">How to Play</h3>
+              <h3 className="text-xl font-bold mb-3 text-blue-400">
+                How to Play
+              </h3>
               <ul className="space-y-2 text-sm text-gray-300">
                 <li>• Look at the landmark image</li>
                 <li>• Press "I Have Answer" to be selected</li>
