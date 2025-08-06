@@ -7,7 +7,13 @@ import { Hand, Users, Trophy, Zap, LogOut, Edit3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Student {
   name: string;
@@ -52,11 +58,14 @@ export default function StudentPage() {
     teams: {},
     currentAnswerer: null,
   });
-  const [currentQuestion, setCurrentQuestion] = useState<QuestionData | null>(null);
+  const [currentQuestion, setCurrentQuestion] = useState<QuestionData | null>(
+    null
+  );
   const [canAnswer, setCanAnswer] = useState(false);
   const [answerResult, setAnswerResult] = useState<any>(null);
   const [hasAlreadyAnswered, setHasAlreadyAnswered] = useState(false);
   const [alreadyAnsweredMessage, setAlreadyAnsweredMessage] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   const { socket } = useSocket();
 
@@ -66,14 +75,25 @@ export default function StudentPage() {
     setStudentId(id);
 
     // Load saved user data from localStorage
-    const savedName = localStorage.getItem('game-student-name');
-    const savedTeam = localStorage.getItem('game-student-team');
-    
+    const savedName = localStorage.getItem("game-student-name");
+    const savedTeam = localStorage.getItem("game-student-team");
+
     if (savedName) {
       setStudentName(savedName);
     }
     if (savedTeam) {
       setSelectedTeam(savedTeam);
+    }
+
+    // Auto-join if both name and team are saved
+    if (savedName && savedTeam && socket) {
+      setHasJoined(true);
+      // Emit join event automatically
+      socket.emit("game-join", {
+        studentId: id,
+        name: savedName,
+        team: savedTeam,
+      });
     }
 
     if (socket) {
@@ -83,7 +103,7 @@ export default function StudentPage() {
       });
 
       socket.on("teams-updated", (teams: Record<string, Team>) => {
-        setGameState(prev => ({ ...prev, teams }));
+        setGameState((prev) => ({ ...prev, teams }));
       });
 
       socket.on("question-display", (questionData: QuestionData) => {
@@ -96,27 +116,27 @@ export default function StudentPage() {
       });
 
       socket.on("student-answering", (answerer: any) => {
-        setGameState(prev => ({ ...prev, currentAnswerer: answerer }));
+        setGameState((prev) => ({ ...prev, currentAnswerer: answerer }));
         setCanAnswer(false);
       });
 
       socket.on("answer-result", (result: any) => {
         setAnswerResult(result);
-        setGameState(prev => ({ 
-          ...prev, 
+        setGameState((prev) => ({
+          ...prev,
           teams: result.teams,
-          currentAnswerer: null 
+          currentAnswerer: null,
         }));
         setCanAnswer(false);
       });
 
       socket.on("answerer-cleared", () => {
-        setGameState(prev => ({ ...prev, currentAnswerer: null }));
+        setGameState((prev) => ({ ...prev, currentAnswerer: null }));
         setCanAnswer(true);
       });
 
       socket.on("game-status-change", (isActive: boolean) => {
-        setGameState(prev => ({ ...prev, isActive }));
+        setGameState((prev) => ({ ...prev, isActive }));
         if (!isActive) {
           setCurrentQuestion(null);
           setCanAnswer(false);
@@ -134,7 +154,9 @@ export default function StudentPage() {
         console.log("Already answered:", data);
         setHasAlreadyAnswered(true);
         setCanAnswer(false);
-        setAlreadyAnsweredMessage(data.message || "You have already answered in this game session.");
+        setAlreadyAnsweredMessage(
+          data.message || "You have already answered in this game session."
+        );
       });
 
       // Listen for one-student mode changes
@@ -168,9 +190,9 @@ export default function StudentPage() {
   const joinGame = () => {
     if (studentName.trim() && selectedTeam && socket) {
       // Save to localStorage
-      localStorage.setItem('game-student-name', studentName.trim());
-      localStorage.setItem('game-student-team', selectedTeam);
-      
+      localStorage.setItem("game-student-name", studentName.trim());
+      localStorage.setItem("game-student-team", selectedTeam);
+
       socket.emit("game-join", {
         studentId,
         name: studentName.trim(),
@@ -182,17 +204,18 @@ export default function StudentPage() {
 
   const logout = () => {
     // Clear localStorage
-    localStorage.removeItem('game-student-name');
-    localStorage.removeItem('game-student-team');
-    
+    localStorage.removeItem("game-student-name");
+    localStorage.removeItem("game-student-team");
+
     // Reset state
     setHasJoined(false);
-    setStudentName('');
-    setSelectedTeam('');
+    setStudentName("");
+    setSelectedTeam("");
     setCurrentQuestion(null);
     setCanAnswer(false);
     setAnswerResult(null);
-    
+    setIsEditing(false);
+
     // Disconnect from socket if needed
     if (socket) {
       socket.disconnect();
@@ -200,6 +223,26 @@ export default function StudentPage() {
       setTimeout(() => {
         socket.connect();
       }, 100);
+    }
+  };
+
+  const handleEditInfo = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (studentName.trim() && selectedTeam && socket) {
+      // Save to localStorage
+      localStorage.setItem("game-student-name", studentName.trim());
+      localStorage.setItem("game-student-team", selectedTeam);
+
+      // Rejoin with new info
+      socket.emit("game-join", {
+        studentId,
+        name: studentName.trim(),
+        team: selectedTeam,
+      });
+      setIsEditing(false);
     }
   };
 
@@ -216,10 +259,10 @@ export default function StudentPage() {
 
   // Get current student's team info
   const myTeam = gameState.teams[selectedTeam];
-  
+
   // Get sorted teams for display
   const sortedTeams = Object.entries(gameState.teams)
-    .sort(([,a], [,b]) => b.score - a.score)
+    .sort(([, a], [, b]) => b.score - a.score)
     .map(([name, data]) => ({ name, ...data }));
 
   if (!hasJoined) {
@@ -236,7 +279,9 @@ export default function StudentPage() {
               <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-yellow-400 to-pink-500 bg-clip-text text-transparent">
                 🌍 Join the Game!
               </h1>
-              <p className="text-gray-300">Enter your details to start playing</p>
+              <p className="text-gray-300">
+                Enter your details to start playing
+              </p>
             </div>
 
             <div className="space-y-6">
@@ -270,7 +315,7 @@ export default function StudentPage() {
                 </Select>
               </div>
 
-              <Button 
+              <Button
                 onClick={joinGame}
                 disabled={!studentName.trim() || !selectedTeam}
                 className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg py-3"
@@ -281,7 +326,10 @@ export default function StudentPage() {
 
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-400">
-                Student ID: <code className="bg-gray-700 px-2 py-1 rounded text-yellow-400">{studentId}</code>
+                Student ID:{" "}
+                <code className="bg-gray-700 px-2 py-1 rounded text-yellow-400">
+                  {studentId}
+                </code>
               </p>
             </div>
           </Card>
@@ -320,8 +368,24 @@ export default function StudentPage() {
       </div>
 
       <div className="container mx-auto px-4 py-8 relative z-10">
-        {/* Logout Button */}
-        <div className="absolute top-4 right-4">
+        {/* Edit and Logout Buttons */}
+        <div className="absolute top-4 right-4 flex gap-2">
+          {!isEditing && (
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <Button
+                onClick={handleEditInfo}
+                variant="outline"
+                className="bg-blue-600/20 border-blue-500/30 text-blue-300 hover:bg-blue-600/40 hover:text-white transition-all duration-200"
+              >
+                <Edit3 className="w-4 h-4 mr-1" />
+                Edit
+              </Button>
+            </motion.div>
+          )}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -340,27 +404,100 @@ export default function StudentPage() {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <motion.h1 
+          <motion.h1
             className="text-4xl font-bold mb-2 bg-gradient-to-r from-yellow-400 to-pink-500 bg-clip-text text-transparent"
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
           >
             Welcome, {studentName}! 👋
           </motion.h1>
-          <motion.p 
+          <motion.p
             className="text-lg text-gray-300"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            Team: <span className="font-bold text-purple-400">{selectedTeam}</span>
+            Team:{" "}
+            <span className="font-bold text-purple-400">{selectedTeam}</span>
             {myTeam && (
               <span className="ml-4">
-                Score: <span className="font-bold text-yellow-400">{myTeam.score}</span>
+                Score:{" "}
+                <span className="font-bold text-yellow-400">
+                  {myTeam.score}
+                </span>
               </span>
             )}
           </motion.p>
         </div>
+
+        {/* Edit Form */}
+        {isEditing && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-md mx-auto mb-8"
+          >
+            <Card className="p-6 bg-black/40 backdrop-blur-sm border-2 border-blue-500/30">
+              <h3 className="text-xl font-bold text-center mb-4 text-blue-400">
+                Edit Information
+              </h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Your Name
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Enter your name"
+                    value={studentName}
+                    onChange={(e) => setStudentName(e.target.value)}
+                    className="bg-gray-800/50 border-gray-600 text-white placeholder-gray-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Select Team
+                  </label>
+                  <Select value={selectedTeam} onValueChange={setSelectedTeam}>
+                    <SelectTrigger className="bg-gray-800/50 border-gray-600 text-white">
+                      <SelectValue placeholder="Choose your team" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-800 border-gray-600">
+                      {Object.keys(gameState.teams).map((team) => (
+                        <SelectItem
+                          key={team}
+                          value={team}
+                          className="text-white"
+                        >
+                          {team} ({gameState.teams[team].members.length}{" "}
+                          members, Score: {gameState.teams[team].score})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <Button
+                    onClick={handleSaveEdit}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                    disabled={!studentName.trim() || !selectedTeam}
+                  >
+                    Save Changes
+                  </Button>
+                  <Button
+                    onClick={() => setIsEditing(false)}
+                    variant="outline"
+                    className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-700"
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        )}
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Game Area */}
@@ -375,7 +512,9 @@ export default function StudentPage() {
                   className="text-center p-12 bg-black/30 rounded-3xl backdrop-blur-sm"
                 >
                   <div className="text-6xl mb-4">⏳</div>
-                  <h2 className="text-3xl font-bold mb-4">Game Starting Soon!</h2>
+                  <h2 className="text-3xl font-bold mb-4">
+                    Game Starting Soon!
+                  </h2>
                   <p className="text-xl text-gray-300">
                     Wait for your teacher to start the game...
                   </p>
@@ -390,13 +529,18 @@ export default function StudentPage() {
                 >
                   <div className="mb-6">
                     <div className="text-lg text-gray-300 mb-2">
-                      Question {currentQuestion.questionNumber} of {currentQuestion.totalQuestions}
+                      Question {currentQuestion.questionNumber} of{" "}
+                      {currentQuestion.totalQuestions}
                     </div>
                     <div className="w-full bg-gray-700 rounded-full h-3">
-                      <div 
+                      <div
                         className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-500"
-                        style={{ 
-                          width: `${(currentQuestion.questionNumber / currentQuestion.totalQuestions) * 100}%` 
+                        style={{
+                          width: `${
+                            (currentQuestion.questionNumber /
+                              currentQuestion.totalQuestions) *
+                            100
+                          }%`,
                         }}
                       />
                     </div>
@@ -404,13 +548,13 @@ export default function StudentPage() {
 
                   <Card className="p-6 bg-black/40 backdrop-blur-sm border-2 border-purple-500/30">
                     <div className="mb-6">
-                      <img 
+                      <img
                         src={currentQuestion.landmark.image_url}
                         alt="Mystery landmark"
                         className="w-full max-w-xl mx-auto rounded-2xl shadow-2xl"
                       />
                     </div>
-                    
+
                     <h3 className="text-2xl font-bold mb-6 text-yellow-400">
                       Which country is this landmark in?
                     </h3>
@@ -439,12 +583,11 @@ export default function StudentPage() {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                       >
-                        <Button 
+                        <Button
                           onClick={requestAnswer}
                           className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-2xl py-4 px-8 rounded-2xl transform transition-all duration-200 shadow-lg hover:shadow-2xl"
                         >
-                          <Hand className="w-8 h-8 mr-3" />
-                          I Have Answer! ✋
+                          <Hand className="w-8 h-8 mr-3" />I Have Answer! ✋
                         </Button>
                       </motion.div>
                     ) : gameState.currentAnswerer ? (
@@ -477,7 +620,9 @@ export default function StudentPage() {
                       </div>
                     ) : (
                       <div className="p-4 bg-gray-700/50 rounded-xl">
-                        <p className="text-gray-400">Waiting for next question...</p>
+                        <p className="text-gray-400">
+                          Waiting for next question...
+                        </p>
                       </div>
                     )}
 
@@ -491,22 +636,29 @@ export default function StudentPage() {
                         {answerResult.winner ? (
                           <div className="p-6 bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-500 rounded-xl">
                             <Trophy className="w-12 h-12 mx-auto mb-4 text-yellow-300" />
-                            <h3 className="text-2xl font-bold mb-2">Game Over!</h3>
+                            <h3 className="text-2xl font-bold mb-2">
+                              Game Over!
+                            </h3>
                             <p className="text-xl">
                               🏆 Winner: {answerResult.winner.name}
                             </p>
                           </div>
                         ) : (
-                          <div className={`p-6 rounded-xl ${
-                            answerResult.isCorrect 
-                              ? "bg-gradient-to-r from-green-500 to-blue-500" 
-                              : "bg-gradient-to-r from-red-500 to-pink-500"
-                          }`}>
+                          <div
+                            className={`p-6 rounded-xl ${
+                              answerResult.isCorrect
+                                ? "bg-gradient-to-r from-green-500 to-blue-500"
+                                : "bg-gradient-to-r from-red-500 to-pink-500"
+                            }`}
+                          >
                             <div className="text-xl font-bold mb-2">
-                              {answerResult.isCorrect ? "✅ Correct!" : "❌ Incorrect"}
+                              {answerResult.isCorrect
+                                ? "✅ Correct!"
+                                : "❌ Incorrect"}
                             </div>
                             <div className="text-lg mb-2">
-                              {answerResult.answerer.name} ({answerResult.answerer.team})
+                              {answerResult.answerer.name} (
+                              {answerResult.answerer.team})
                             </div>
                             {answerResult.isCorrect && (
                               <div className="text-lg">
@@ -514,7 +666,10 @@ export default function StudentPage() {
                               </div>
                             )}
                             <div className="mt-3 text-lg">
-                              Answer: <strong>{answerResult.correctAnswer?.toUpperCase()}</strong>
+                              Answer:{" "}
+                              <strong>
+                                {answerResult.correctAnswer?.toUpperCase()}
+                              </strong>
                             </div>
                           </div>
                         )}
@@ -554,14 +709,23 @@ export default function StudentPage() {
                 </h3>
                 <div className="text-center mb-4">
                   <div className="text-2xl font-bold">{selectedTeam}</div>
-                  <div className="text-3xl font-bold text-yellow-400">{myTeam.score} pts</div>
+                  <div className="text-3xl font-bold text-yellow-400">
+                    {myTeam.score} pts
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <div className="text-sm text-gray-400 mb-2">Team Members:</div>
+                  <div className="text-sm text-gray-400 mb-2">
+                    Team Members:
+                  </div>
                   {myTeam.members.map((member, index) => (
-                    <div key={member.id} className={`text-sm p-2 rounded ${
-                      member.id === studentId ? "bg-purple-600/30 font-bold" : "bg-gray-700/30"
-                    }`}>
+                    <div
+                      key={member.id}
+                      className={`text-sm p-2 rounded ${
+                        member.id === studentId
+                          ? "bg-purple-600/30 font-bold"
+                          : "bg-gray-700/30"
+                      }`}
+                    >
                       {member.name} {member.id === studentId && "(You)"}
                     </div>
                   ))}
@@ -590,14 +754,20 @@ export default function StudentPage() {
                     className={`flex justify-between items-center p-3 rounded-lg ${
                       team.name === selectedTeam
                         ? "bg-purple-600/30 border-2 border-purple-500/50"
-                        : index === 0 
-                        ? "bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30" 
+                        : index === 0
+                        ? "bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30"
                         : "bg-gray-700/30"
                     }`}
                   >
                     <div className="flex items-center">
                       <span className="text-xl mr-2">
-                        {index === 0 ? "👑" : index === 1 ? "🥈" : index === 2 ? "🥉" : `${index + 1}.`}
+                        {index === 0
+                          ? "👑"
+                          : index === 1
+                          ? "🥈"
+                          : index === 2
+                          ? "🥉"
+                          : `${index + 1}.`}
                       </span>
                       <div className="font-bold">{team.name}</div>
                     </div>

@@ -95,6 +95,17 @@ export default function MalawiStudentPage() {
       setSelectedTeam(savedTeam);
     }
 
+    // Auto-join if both name and team are saved
+    if (savedName && savedTeam && socket) {
+      setHasJoined(true);
+      // Emit join event automatically
+      socket.emit("malawi-game-join", {
+        studentId: id,
+        name: savedName,
+        team: savedTeam,
+      });
+    }
+
     if (socket) {
       // Listen for game state updates
       socket.on("malawi-game-state", (state: MalawiGameState) => {

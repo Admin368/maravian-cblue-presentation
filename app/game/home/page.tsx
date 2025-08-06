@@ -62,65 +62,7 @@ export default function GameHomePage() {
           </motion.div>
 
           {/* Game modes */}
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Teacher/Presentation Mode */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-            >
-              <Card className="p-8 bg-black/40 backdrop-blur-sm border-2 border-purple-500/30 hover:border-purple-400/50 transition-all duration-300 group h-full">
-                <div className="text-center">
-                  <div className="mb-6 relative">
-                    <div className="w-24 h-24 mx-auto bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                      <Monitor className="w-12 h-12 text-white" />
-                    </div>
-                    <motion.div
-                      className="absolute -top-2 -right-2 bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold"
-                      animate={{ rotate: [0, 10, -10, 0] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      TEACHER
-                    </motion.div>
-                  </div>
-
-                  <h2 className="text-3xl font-bold mb-4 text-purple-400">
-                    Presentation Mode
-                  </h2>
-                  <p className="text-gray-300 mb-6 text-lg">
-                    Control the game, display questions on the big screen, and
-                    manage team scores. Perfect for classroom presentations!
-                  </p>
-
-                  <div className="space-y-3 mb-6 text-left">
-                    <div className="flex items-center text-sm text-gray-400">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                      Load and display landmark questions
-                    </div>
-                    <div className="flex items-center text-sm text-gray-400">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                      Manage student answers and scoring
-                    </div>
-                    <div className="flex items-center text-sm text-gray-400">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                      Real-time leaderboard display
-                    </div>
-                    <div className="flex items-center text-sm text-gray-400">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                      Full teacher control panel
-                    </div>
-                  </div>
-
-                  <Link href="/game/teacher">
-                    <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg py-3 group-hover:scale-105 transition-transform duration-200">
-                      <GraduationCap className="w-5 h-5 mr-2" />
-                      Start as Teacher
-                    </Button>
-                  </Link>
-                </div>
-              </Card>
-            </motion.div>
-
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Student Mode */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
@@ -174,6 +116,122 @@ export default function GameHomePage() {
                     <Button className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-lg py-3 group-hover:scale-105 transition-transform duration-200">
                       <Users className="w-5 h-5 mr-2" />
                       Join as Student
+                    </Button>
+                  </Link>
+                </div>
+              </Card>
+            </motion.div>
+
+            {/* Presentation Mode */}
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.8 }}
+            >
+              <Card className="p-8 bg-black/40 backdrop-blur-sm border-2 border-green-500/30 hover:border-green-400/50 transition-all duration-300 group h-full">
+                <div className="text-center">
+                  <div className="mb-6 relative">
+                    <div className="w-24 h-24 mx-auto bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Monitor className="w-12 h-12 text-white" />
+                    </div>
+                    <motion.div
+                      className="absolute -top-2 -right-2 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold"
+                      animate={{ rotate: [0, 10, -10, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      PRESENTATION
+                    </motion.div>
+                  </div>
+
+                  <h2 className="text-3xl font-bold mb-4 text-green-400">
+                    Presentation Mode
+                  </h2>
+                  <p className="text-gray-300 mb-6 text-lg">
+                    Full screen presentation mode for spectators and large
+                    displays. Perfect for projectors and viewing the game!
+                  </p>
+
+                  <div className="space-y-3 mb-6 text-left">
+                    <div className="flex items-center text-sm text-gray-400">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                      Full screen game display
+                    </div>
+                    <div className="flex items-center text-sm text-gray-400">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                      Optimized for projectors
+                    </div>
+                    <div className="flex items-center text-sm text-gray-400">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                      Spectator-friendly view
+                    </div>
+                    <div className="flex items-center text-sm text-gray-400">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                      Live game updates
+                    </div>
+                  </div>
+
+                  <Link href="/game/presentation">
+                    <Button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-lg py-3 group-hover:scale-105 transition-transform duration-200">
+                      <Monitor className="w-5 h-5 mr-2" />
+                      View Presentation
+                    </Button>
+                  </Link>
+                </div>
+              </Card>
+            </motion.div>
+
+            {/* Teacher/Presentation Mode */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+            >
+              <Card className="p-8 bg-black/40 backdrop-blur-sm border-2 border-purple-500/30 hover:border-purple-400/50 transition-all duration-300 group h-full">
+                <div className="text-center">
+                  <div className="mb-6 relative">
+                    <div className="w-24 h-24 mx-auto bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Monitor className="w-12 h-12 text-white" />
+                    </div>
+                    <motion.div
+                      className="absolute -top-2 -right-2 bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold"
+                      animate={{ rotate: [0, 10, -10, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      TEACHER
+                    </motion.div>
+                  </div>
+
+                  <h2 className="text-3xl font-bold mb-4 text-purple-400">
+                    Teacher Mode
+                  </h2>
+                  <p className="text-gray-300 mb-6 text-lg">
+                    Control the game, display questions on the big screen, and
+                    manage team scores. Perfect for classroom presentations!
+                  </p>
+
+                  <div className="space-y-3 mb-6 text-left">
+                    <div className="flex items-center text-sm text-gray-400">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                      Load and display landmark questions
+                    </div>
+                    <div className="flex items-center text-sm text-gray-400">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                      Manage student answers and scoring
+                    </div>
+                    <div className="flex items-center text-sm text-gray-400">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                      Real-time leaderboard display
+                    </div>
+                    <div className="flex items-center text-sm text-gray-400">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                      Full teacher control panel
+                    </div>
+                  </div>
+
+                  <Link href="/game/teacher">
+                    <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg py-3 group-hover:scale-105 transition-transform duration-200">
+                      <GraduationCap className="w-5 h-5 mr-2" />
+                      Start as Teacher
                     </Button>
                   </Link>
                 </div>

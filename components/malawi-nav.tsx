@@ -48,9 +48,7 @@ export default function MalawiNav() {
         <div className="flex justify-between items-center h-16">
           {/* Logo/Brand */}
           <Link href="/malawi" className="flex items-center space-x-2">
-            <span className="text-xl font-bold text-white">
-              Malawi Presentation
-            </span>
+            <span className="text-xl font-bold text-white">Sync_V2</span>
           </Link>
 
           {/* Desktop Navigation */}
