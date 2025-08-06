@@ -1,5 +1,6 @@
 import type React from "react";
 import type { Metadata } from "next";
+import MalawiNav from "@/components/malawi-nav";
 
 export const metadata: Metadata = {
   title: "English Program - Malawi Cultural Presentation",
@@ -12,5 +13,10 @@ export default function MalawiLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <>
+      <MalawiNav />
+      <div className="pt-16">{children}</div>
+    </>
+  );
 }

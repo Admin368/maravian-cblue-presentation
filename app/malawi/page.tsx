@@ -487,17 +487,8 @@ export default function MalawiPresentationPage() {
           )}
         </AnimatePresence>
 
-        {/* Navigation Links */}
-        <div className="fixed top-4 left-4 z-20 flex space-x-2">
-          <Link href="/malawi/qr">
-            <Button className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transform transition-all duration-200 hover:scale-105">
-              📱 Student QR Code
-            </Button>
-          </Link>
-        </div>
-
         {/* Admin controls */}
-        <div className="fixed top-4 right-4 z-20 flex items-center space-x-4">
+        <div className="fixed top-20 right-4 z-20 flex items-center space-x-4">
           {/* QA message viewer button */}
           {(isAdmin || isQAEnabled) && qaMessages.length > 0 && (
             <button
@@ -558,14 +549,14 @@ export default function MalawiPresentationPage() {
         </div>
 
         {/* Game Status Indicator */}
-        {gameState.isActive && (
+        {/* {gameState.isActive && (
           <div className="fixed top-20 right-4 z-20">
             <div className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center">
               <Trophy className="w-4 h-4 mr-2" />
               Game Active
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Questions modal toggle */}
         {gameMode && (

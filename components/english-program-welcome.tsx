@@ -89,7 +89,7 @@ export default function EnglishProgramWelcomeSection() {
             </h2>
           </div>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            An interactive presentation for Chinese students preparing for
+            An interactive presentation for preparing english students for
             international work and travel experiences
           </p>
         </motion.div>
