@@ -36,6 +36,7 @@ interface MalawiGameState {
     team: string;
     socketId: string;
   } | null;
+  oneStudentPerQuestion?: boolean;
 }
 
 interface QuestionData {
@@ -60,6 +61,7 @@ export default function MalawiStudentPage() {
       "Team 5": { score: 0, members: [] },
     },
     currentAnswerer: null,
+    oneStudentPerQuestion: false,
   });
   const [currentQuestion, setCurrentQuestion] = useState<QuestionData | null>(
     null
@@ -73,6 +75,7 @@ export default function MalawiStudentPage() {
     correctAnswer: string;
     answerer: any;
   } | null>(null);
+  const [rejectionMessage, setRejectionMessage] = useState<string | null>(null);
 
   const { socket } = useSocket();
 
@@ -146,7 +149,16 @@ export default function MalawiStudentPage() {
 
       // Listen for one-student mode toggle
       socket.on("malawi-one-student-mode-toggled", (enabled: boolean) => {
-        // Handle one student per question mode if needed
+        setGameState((prev) => ({ ...prev, oneStudentPerQuestion: enabled }));
+      });
+
+      // Listen for answer rejection
+      socket.on("malawi-answer-rejected", (rejection: any) => {
+        setRejectionMessage(rejection.message);
+        // Hide rejection message after 5 seconds
+        setTimeout(() => {
+          setRejectionMessage(null);
+        }, 5000);
       });
 
       return () => {
@@ -158,6 +170,7 @@ export default function MalawiStudentPage() {
         socket.off("malawi-answer-result");
         socket.off("malawi-answerer-cleared");
         socket.off("malawi-one-student-mode-toggled");
+        socket.off("malawi-answer-rejected");
       };
     }
   }, [socket, currentQuestion]);
@@ -521,6 +534,32 @@ export default function MalawiStudentPage() {
                     <p>Wait for the next question...</p>
                   </div>
                 )}
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Rejection Message */}
+        <AnimatePresence>
+          {rejectionMessage && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="mb-6"
+            >
+              <Card className="p-6 bg-red-600/20 border-red-500/30">
+                <div className="text-center">
+                  <div className="mb-4">
+                    <div className="w-16 h-16 mx-auto bg-red-500/20 rounded-full flex items-center justify-center">
+                      <span className="text-3xl">⚠️</span>
+                    </div>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-2 text-red-400">
+                    Cannot Answer
+                  </h3>
+                  <p className="text-gray-300 mb-4">{rejectionMessage}</p>
+                </div>
               </Card>
             </motion.div>
           )}

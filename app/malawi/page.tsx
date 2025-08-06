@@ -48,6 +48,7 @@ interface MalawiGameState {
     socketId: string;
   } | null;
   showAnswer: boolean;
+  oneStudentPerQuestion?: boolean;
 }
 
 export default function MalawiPresentationPage() {
@@ -86,6 +87,7 @@ export default function MalawiPresentationPage() {
     currentQuestion: null,
     currentAnswerer: null,
     showAnswer: false,
+    oneStudentPerQuestion: false,
   });
 
   const { socket } = useSocket();
@@ -167,6 +169,11 @@ export default function MalawiPresentationPage() {
         setGameState((prev) => ({ ...prev, currentAnswerer: null }));
       });
 
+      // Listen for one student mode toggle
+      socket.on("malawi-one-student-mode-toggled", (enabled: boolean) => {
+        setGameState((prev) => ({ ...prev, oneStudentPerQuestion: enabled }));
+      });
+
       // Listen for game mode changes - redirect non-admins to student interface
       socket.on("malawi-game-mode-change", (gameModeActive: boolean) => {
         if (gameModeActive && !isAdmin) {
@@ -199,6 +206,7 @@ export default function MalawiPresentationPage() {
         socket.off("malawi-student-answering");
         socket.off("malawi-answer-result");
         socket.off("malawi-answerer-cleared");
+        socket.off("malawi-one-student-mode-toggled");
         socket.off("malawi-game-mode-change");
       };
     }
@@ -398,6 +406,12 @@ export default function MalawiPresentationPage() {
     }
   };
 
+  const toggleOneStudentMode = (enabled: boolean) => {
+    if (isAdmin && socket) {
+      socket.emit("malawi-toggle-one-student-mode", enabled);
+    }
+  };
+
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 text-white overflow-hidden">
       {/* Ocean waves background */}
@@ -441,6 +455,7 @@ export default function MalawiPresentationPage() {
         onAskQuestion={askQuestion}
         onApproveAnswer={approveAnswer}
         onClearAnswerer={clearAnswerer}
+        onToggleOneStudentMode={toggleOneStudentMode}
       />
 
       {/* Content */}

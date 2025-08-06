@@ -41,6 +41,7 @@ interface MalawiGameState {
     socketId: string;
   } | null;
   showAnswer: boolean;
+  oneStudentPerQuestion?: boolean;
 }
 
 interface MalawiSlide {
@@ -64,6 +65,7 @@ interface MalawiQuestionsModalProps {
   onAskQuestion: (slideIndex: number, questionIndex: number) => void;
   onApproveAnswer: (isCorrect: boolean, points?: number) => void;
   onClearAnswerer: () => void;
+  onToggleOneStudentMode: (enabled: boolean) => void;
 }
 
 export default function MalawiQuestionsModal({
@@ -77,6 +79,7 @@ export default function MalawiQuestionsModal({
   onAskQuestion,
   onApproveAnswer,
   onClearAnswerer,
+  onToggleOneStudentMode,
 }: MalawiQuestionsModalProps) {
   const [selectedSlide, setSelectedSlide] = useState(currentSlide);
 
@@ -195,6 +198,44 @@ export default function MalawiQuestionsModal({
                       </Button>
                     )}
                   </div>
+
+                  {/* One Student Per Question Toggle */}
+                  {isAdmin && (
+                    <div className="mt-4 pt-4 border-t border-slate-600">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-white font-medium">
+                            One Student Per Question
+                          </span>
+                          <p className="text-gray-400 text-sm mt-1">
+                            Only allow one student to answer each question
+                          </p>
+                        </div>
+                        <Button
+                          onClick={() =>
+                            onToggleOneStudentMode(
+                              !gameState.oneStudentPerQuestion
+                            )
+                          }
+                          variant={
+                            gameState.oneStudentPerQuestion
+                              ? "default"
+                              : "outline"
+                          }
+                          size="sm"
+                          className={
+                            gameState.oneStudentPerQuestion
+                              ? "bg-blue-600 hover:bg-blue-700"
+                              : "border-gray-600 text-gray-300 hover:bg-gray-800"
+                          }
+                        >
+                          {gameState.oneStudentPerQuestion
+                            ? "Enabled"
+                            : "Disabled"}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </Card>
 
                 {/* Current Question */}

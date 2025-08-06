@@ -1,0 +1,4 @@
+- [] ability to load code questions ainitial and then store then in socket server then ability to add, edit or delete the question and answers from admin then replacing the data on socke server and saving a copy on the admin user pc localstorage
+- [] custom presenation Id's and rooms
+- [] if user name and grou=os is already stored on local storage, no need to ask again on /malawi/student unless they click edit or leave
+- [] /game/presentation enlage image to fit available height for presentation view

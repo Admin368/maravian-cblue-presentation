@@ -98,6 +98,8 @@ const malawiPresentationState = {
     currentQuestion: null,
     currentAnswerer: null,
     showAnswer: false,
+    oneStudentPerQuestion: false, // New feature: only one student can answer per question
+    studentsWhoAnswered: new Set(), // Track students who have answered this question
   },
 };
 
@@ -577,6 +579,20 @@ io.on("connection", (socket) => {
     ).find((s) => s.socketId === socket.id);
 
     if (student && !malawiPresentationState.gameState.currentAnswerer) {
+      // Check if one student per question mode is enabled and student has already answered
+      if (
+        malawiPresentationState.gameState.oneStudentPerQuestion &&
+        malawiPresentationState.gameState.studentsWhoAnswered.has(studentId)
+      ) {
+        // Send message to student that they can't answer again
+        socket.emit("malawi-answer-rejected", {
+          reason: "already_answered",
+          message:
+            "You have already answered this question. Please wait for other students to participate.",
+        });
+        return;
+      }
+
       malawiPresentationState.gameState.currentAnswerer = {
         studentId: studentId,
         name: student.name,
@@ -618,6 +634,8 @@ io.on("connection", (socket) => {
     malawiPresentationState.gameState.currentQuestion = questionData;
     malawiPresentationState.gameState.currentAnswerer = null;
     malawiPresentationState.gameState.showAnswer = false;
+    // Clear the set of students who answered when a new question is asked
+    malawiPresentationState.gameState.studentsWhoAnswered.clear();
 
     io.emit("malawi-question-asked", questionData);
   });
@@ -626,7 +644,15 @@ io.on("connection", (socket) => {
   socket.on("malawi-answer-result", (data) => {
     console.log(`Malawi: Answer result:`, data);
     if (malawiPresentationState.gameState.currentAnswerer) {
+      const studentId =
+        malawiPresentationState.gameState.currentAnswerer.studentId;
       const team = malawiPresentationState.gameState.currentAnswerer.team;
+
+      // Add student to answered set if one student per question mode is enabled
+      if (malawiPresentationState.gameState.oneStudentPerQuestion) {
+        malawiPresentationState.gameState.studentsWhoAnswered.add(studentId);
+      }
+
       if (data.isCorrect && malawiPresentationState.gameState.teams[team]) {
         malawiPresentationState.gameState.teams[team].score += data.points || 1;
       }
@@ -651,6 +677,17 @@ io.on("connection", (socket) => {
   socket.on("malawi-clear-answerer", () => {
     malawiPresentationState.gameState.currentAnswerer = null;
     io.emit("malawi-answerer-cleared");
+  });
+
+  // Teacher toggles one student per question mode
+  socket.on("malawi-toggle-one-student-mode", (enabled) => {
+    console.log(`Malawi: One student per question mode toggled to: ${enabled}`);
+    malawiPresentationState.gameState.oneStudentPerQuestion = enabled;
+    // Clear answered students when disabling the mode
+    if (!enabled) {
+      malawiPresentationState.gameState.studentsWhoAnswered.clear();
+    }
+    io.emit("malawi-one-student-mode-toggled", enabled);
   });
 
   // Send Malawi presentation state to joining clients

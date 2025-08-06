@@ -279,9 +279,9 @@ export default function GameHomePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.1, duration: 0.8 }}
-            className="mt-12"
+            className="mt-12 gap-2 flex justify-center"
           >
-            <Link href="/">
+            <Link href="/malawi">
               <Button
                 variant="outline"
                 className="text-gray-400 border-gray-600 hover:bg-gray-700"
