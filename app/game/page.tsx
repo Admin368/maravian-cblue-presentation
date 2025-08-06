@@ -6,7 +6,7 @@ import { useSocket } from "@/hooks/use-socket";
 import { Crown, Users, MapPin, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import landmarks from "@/data/landmarks_data.js";
+import { landmarks } from "@/data/landmarks_data";
 
 interface Landmark {
   country: string;
@@ -101,7 +101,9 @@ export default function GamePage() {
 
         // Track answered questions and add to answer log
         if (result.answerer && currentQuestion) {
-          setAnsweredQuestions(prev => new Set([...prev, currentQuestion.questionNumber - 1]));
+          setAnsweredQuestions(
+            (prev) => new Set([...prev, currentQuestion.questionNumber - 1])
+          );
           const logEntry = {
             id: Date.now().toString(),
             studentName: result.answerer.name,
@@ -112,7 +114,7 @@ export default function GamePage() {
             timestamp: new Date(),
             questionNumber: currentQuestion.questionNumber,
           };
-          setAnswerLog(prev => [logEntry, ...prev.slice(0, 9)]); // Keep last 10 entries
+          setAnswerLog((prev) => [logEntry, ...prev.slice(0, 9)]); // Keep last 10 entries
         }
       });
 
@@ -141,7 +143,6 @@ export default function GamePage() {
       socket.on("questions-list", (questions: Landmark[]) => {
         setQuestionsList(questions);
       });
-
 
       return () => {
         socket.off("game-state");
@@ -641,16 +642,28 @@ export default function GamePage() {
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <div className="font-bold text-sm truncate">{entry.studentName}</div>
-                          <div className={`text-xs px-2 py-1 rounded ${
-                            entry.isCorrect ? "bg-green-500/30 text-green-300" : "bg-red-500/30 text-red-300"
-                          }`}>
+                          <div className="font-bold text-sm truncate">
+                            {entry.studentName}
+                          </div>
+                          <div
+                            className={`text-xs px-2 py-1 rounded ${
+                              entry.isCorrect
+                                ? "bg-green-500/30 text-green-300"
+                                : "bg-red-500/30 text-red-300"
+                            }`}
+                          >
                             {entry.isCorrect ? `+${entry.points}` : "0"}
                           </div>
                         </div>
-                        <div className="text-xs text-gray-400 mb-1">{entry.team}</div>
-                        <div className="text-xs font-bold">{entry.country.toUpperCase()}</div>
-                        <div className="text-xs text-gray-500">Q{entry.questionNumber}</div>
+                        <div className="text-xs text-gray-400 mb-1">
+                          {entry.team}
+                        </div>
+                        <div className="text-xs font-bold">
+                          {entry.country.toUpperCase()}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Q{entry.questionNumber}
+                        </div>
                       </motion.div>
                     ))
                   )}
