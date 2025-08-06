@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare, Hand, Users, Trophy } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useSocket } from "@/hooks/use-socket";
 import { Ship } from "@/components/ship-animation";
@@ -50,6 +51,7 @@ interface MalawiGameState {
 }
 
 export default function MalawiPresentationPage() {
+  const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isPresentationActive, setIsPresentationActive] = useState(false);
@@ -165,6 +167,14 @@ export default function MalawiPresentationPage() {
         setGameState((prev) => ({ ...prev, currentAnswerer: null }));
       });
 
+      // Listen for game mode changes - redirect non-admins to student interface
+      socket.on("malawi-game-mode-change", (gameModeActive: boolean) => {
+        if (gameModeActive && !isAdmin) {
+          // Redirect non-admin users to student interface when questions mode is activated
+          router.push("/malawi/student");
+        }
+      });
+
       socket.on("malawi-presentationState", (state: any) => {
         setCurrentSlide(state.currentSlide);
         setIsPresentationActive(state.isActive);
@@ -189,6 +199,7 @@ export default function MalawiPresentationPage() {
         socket.off("malawi-student-answering");
         socket.off("malawi-answer-result");
         socket.off("malawi-answerer-cleared");
+        socket.off("malawi-game-mode-change");
       };
     }
   }, [socket]);
@@ -340,8 +351,15 @@ export default function MalawiPresentationPage() {
 
   // Game functions
   const toggleGameMode = () => {
-    setGameMode(!gameMode);
-    if (!gameMode) {
+    const newGameMode = !gameMode;
+    setGameMode(newGameMode);
+
+    // Emit game mode change to server
+    if (socket) {
+      socket.emit("malawi-toggle-game-mode", newGameMode);
+    }
+
+    if (newGameMode) {
       setGameSidebarOpen(true);
     }
   };
@@ -502,7 +520,7 @@ export default function MalawiPresentationPage() {
               } text-white`}
             >
               <Trophy className="w-4 h-4 mr-2" />
-              {gameMode ? "Game Mode" : "Enable Game"}
+              {gameMode ? "Questions Active" : "Enable Questions"}
             </button>
           )}
 

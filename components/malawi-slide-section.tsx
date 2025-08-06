@@ -367,7 +367,7 @@ export default function MalawiSlideSection({
                 <h4 className="text-xl font-semibold">Discussion Questions</h4>
                 {gameState.isActive && (
                   <span className="ml-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm">
-                    Game Active
+                    Questions Active
                   </span>
                 )}
               </div>

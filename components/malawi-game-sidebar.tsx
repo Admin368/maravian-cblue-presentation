@@ -127,7 +127,7 @@ export default function MalawiGameSidebar({
                 <div className="flex items-center">
                   <Trophy className="w-6 h-6 text-yellow-500 mr-2" />
                   <h2 className="text-xl font-bold text-white">
-                    Game Controls
+                    Questions Controls
                   </h2>
                 </div>
                 <button
@@ -148,7 +148,7 @@ export default function MalawiGameSidebar({
                       }`}
                     />
                     <span className="text-white font-medium">
-                      Game {gameState.isActive ? "Active" : "Inactive"}
+                      Questions {gameState.isActive ? "Active" : "Inactive"}
                     </span>
                   </div>
                   {isAdmin && (

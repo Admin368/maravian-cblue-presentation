@@ -84,6 +84,7 @@ const malawiPresentationState = {
   focusedImages: {},
   qaEnabled: false,
   qaMessages: [],
+  gameModeActive: false, // Track if questions/game mode is active
   gameState: {
     isActive: false,
     teams: {
@@ -602,6 +603,13 @@ io.on("connection", (socket) => {
       malawiPresentationState.gameState.currentQuestion = null;
     }
     io.emit("malawi-game-status-change", isActive);
+  });
+
+  // Teacher toggles game mode (activates questions interface)
+  socket.on("malawi-toggle-game-mode", (gameModeActive) => {
+    console.log(`Malawi: Game mode toggled to: ${gameModeActive}`);
+    malawiPresentationState.gameModeActive = gameModeActive;
+    io.emit("malawi-game-mode-change", gameModeActive);
   });
 
   // Teacher asks a question
