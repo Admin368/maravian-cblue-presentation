@@ -20,7 +20,7 @@ export default function MalawiQRCodePage() {
       ? "https://english-program.maravian.com"
       : "http://192.168.1.168:3000";
 
-    const fullStudentUrl = `${baseUrl}/malawi/student`;
+    const fullStudentUrl = `${baseUrl}/malawi`;
     setStudentUrl(fullStudentUrl);
 
     // Generate QR code
@@ -158,7 +158,9 @@ export default function MalawiQRCodePage() {
         >
           <Card className="p-6 bg-black/30 backdrop-blur-sm border border-purple-500/20 text-center">
             <MapPin className="w-8 h-8 text-blue-400 mx-auto mb-3" />
-            <h3 className="text-lg font-semibold mb-2">Cultural Learning</h3>
+            <h3 className="text-lg font-semibold mb-2 text-white">
+              Cultural Learning
+            </h3>
             <p className="text-sm text-gray-400">
               Learn about Malawi's culture, customs, and practical travel
               information
@@ -167,7 +169,9 @@ export default function MalawiQRCodePage() {
 
           <Card className="p-6 bg-black/30 backdrop-blur-sm border border-purple-500/20 text-center">
             <Users className="w-8 h-8 text-green-400 mx-auto mb-3" />
-            <h3 className="text-lg font-semibold mb-2">Team Competition</h3>
+            <h3 className="text-lg font-semibold mb-2 text-white">
+              Team Competition
+            </h3>
             <p className="text-sm text-gray-400">
               Join a team and compete in answering questions about Malawi
             </p>
@@ -175,7 +179,9 @@ export default function MalawiQRCodePage() {
 
           <Card className="p-6 bg-black/30 backdrop-blur-sm border border-purple-500/20 text-center">
             <Globe className="w-8 h-8 text-purple-400 mx-auto mb-3" />
-            <h3 className="text-lg font-semibold mb-2">Prepare for Travel</h3>
+            <h3 className="text-lg font-semibold mb-2 text-white">
+              Prepare for Travel
+            </h3>
             <p className="text-sm text-gray-400">
               Get ready for international work and travel experiences
             </p>

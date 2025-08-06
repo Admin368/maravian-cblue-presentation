@@ -81,6 +81,17 @@ export default function MalawiStudentPage() {
     const id = Math.random().toString(36).substring(2, 15);
     setStudentId(id);
 
+    // Load saved user data from localStorage (same keys as game)
+    const savedName = localStorage.getItem("game-student-name");
+    const savedTeam = localStorage.getItem("game-student-team");
+
+    if (savedName) {
+      setStudentName(savedName);
+    }
+    if (savedTeam) {
+      setSelectedTeam(savedTeam);
+    }
+
     if (socket) {
       // Listen for game state updates
       socket.on("malawi-game-state", (state: MalawiGameState) => {
@@ -153,6 +164,10 @@ export default function MalawiStudentPage() {
 
   const handleJoinGame = () => {
     if (studentName.trim() && selectedTeam && socket) {
+      // Save to localStorage (same keys as game)
+      localStorage.setItem("game-student-name", studentName.trim());
+      localStorage.setItem("game-student-team", selectedTeam);
+
       socket.emit("malawi-game-join", {
         studentId,
         name: studentName.trim(),
@@ -177,6 +192,10 @@ export default function MalawiStudentPage() {
 
   const handleSaveEdit = () => {
     if (studentName.trim() && selectedTeam && socket) {
+      // Save to localStorage (same keys as game)
+      localStorage.setItem("game-student-name", studentName.trim());
+      localStorage.setItem("game-student-team", selectedTeam);
+
       // Leave current team and rejoin with new info
       socket.emit("malawi-game-join", {
         studentId,
@@ -188,10 +207,16 @@ export default function MalawiStudentPage() {
   };
 
   const handleLeaveGame = () => {
+    // Clear localStorage data
+    localStorage.removeItem("game-student-name");
+    localStorage.removeItem("game-student-team");
+
     setHasJoined(false);
     setCurrentQuestion(null);
     setCanAnswer(false);
     setShowResult(false);
+    setStudentName("");
+    setSelectedTeam("");
     // Socket will handle cleanup on disconnect
   };
 
@@ -556,7 +581,7 @@ export default function MalawiStudentPage() {
         </AnimatePresence>
 
         {/* Team Scores */}
-        <Card className="p-6 bg-slate-800/50 border-slate-700">
+        <Card className="p-6 bg-slate-800/50 border-slate-700 text-white">
           <div className="flex items-center mb-6">
             <Trophy className="w-6 h-6 text-yellow-500 mr-2" />
             <h3 className="text-xl font-bold">Team Scores</h3>

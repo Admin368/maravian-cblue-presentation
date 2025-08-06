@@ -17,7 +17,7 @@ import {
   QASidebar,
 } from "@/components/qa-components";
 import MalawiSlideSection from "@/components/malawi-slide-section";
-import MalawiGameSidebar from "@/components/malawi-game-sidebar";
+import MalawiQuestionsModal from "@/components/malawi-questions-modal";
 import { malawiSlides } from "@/data/malawi";
 
 // Enum for scroll modes
@@ -73,7 +73,7 @@ export default function MalawiPresentationPage() {
 
   // Game state
   const [gameMode, setGameMode] = useState(false);
-  const [gameSidebarOpen, setGameSidebarOpen] = useState(false);
+  const [questionsModalOpen, setQuestionsModalOpen] = useState(false);
   const [gameState, setGameState] = useState<MalawiGameState>({
     isActive: false,
     teams: {
@@ -360,7 +360,7 @@ export default function MalawiPresentationPage() {
     }
 
     if (newGameMode) {
-      setGameSidebarOpen(true);
+      setQuestionsModalOpen(true);
     }
   };
 
@@ -429,10 +429,10 @@ export default function MalawiPresentationPage() {
         messages={qaMessages}
       />
 
-      {/* Game Sidebar */}
-      <MalawiGameSidebar
-        isOpen={gameSidebarOpen}
-        onClose={() => setGameSidebarOpen(false)}
+      {/* Questions Modal */}
+      <MalawiQuestionsModal
+        isOpen={questionsModalOpen}
+        onClose={() => setQuestionsModalOpen(false)}
         gameState={gameState}
         isAdmin={isAdmin}
         currentSlide={currentSlide}
@@ -567,15 +567,15 @@ export default function MalawiPresentationPage() {
           </div>
         )}
 
-        {/* Game sidebar toggle */}
+        {/* Questions modal toggle */}
         {gameMode && (
           <div className="fixed bottom-8 left-8 z-20">
             <button
-              onClick={() => setGameSidebarOpen(true)}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center"
+              onClick={() => setQuestionsModalOpen(true)}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg flex items-center text-lg font-medium shadow-lg"
             >
-              <Users className="w-4 h-4 mr-2" />
-              Game Controls
+              <Users className="w-5 h-5 mr-2" />
+              Questions Control Center
             </button>
           </div>
         )}
