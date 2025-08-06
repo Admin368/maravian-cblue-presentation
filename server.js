@@ -7,6 +7,8 @@ const httpServer = createServer();
 // Define allowed origins for better security
 const allowedOrigins = [
   "http://localhost:3000",
+  "http://192.168.1.102:3000",
+  "http://192.168.1.168:3000",
   "https://maravian.com",
   "https://www.maravian.com",
   "https://main.maravian.com",
@@ -50,6 +52,27 @@ const presentationState = {
   focusedImages: {}, // Track focused images by country ID
   qaEnabled: false, // Whether Q&A is enabled
   qaMessages: [], // Array to store Q&A messages
+};
+
+// Guess the Country game state
+const gameState = {
+  isActive: false,
+  currentQuestion: -1, // Start at -1 so first question becomes 0
+  currentLandmark: null,
+  questions: [],
+  teams: {
+    "Team 1": { score: 0, members: [] },
+    "Team 2": { score: 0, members: [] },
+    "Team 3": { score: 0, members: [] },
+    "Team 4": { score: 0, members: [] },
+    "Team 5": { score: 0, members: [] },
+  },
+  students: new Map(), // studentId -> { name, team, socketId, isAnswering }
+  currentAnswerer: null,
+  questionStartTime: null,
+  showAnswer: false,
+  oneStudentPerQuestion: false, // New feature: only one student can answer per question
+  studentsWhoAnswered: new Set(), // Track students who have answered
 };
 
 // Socket.IO connection handling
@@ -154,10 +177,279 @@ io.on("connection", (socket) => {
     io.emit("qa-status-change", enabled);
   });
 
+  // Guess the Country Game Events
+
+  // Student joins the game
+  socket.on("game-join", (data) => {
+    console.log(`Student joining game:`, data);
+    const studentId = data.studentId || socket.id;
+    gameState.students.set(studentId, {
+      name: data.name,
+      team: data.team,
+      socketId: socket.id,
+      isAnswering: false,
+    });
+
+    // Add to team members
+    if (gameState.teams[data.team]) {
+      gameState.teams[data.team].members.push({
+        id: studentId,
+        name: data.name,
+      });
+    }
+
+    // Send game state to new student
+    socket.emit("game-state", gameState);
+
+    // Broadcast updated teams to all clients
+    io.emit("teams-updated", gameState.teams);
+  });
+
+  // Student wants to answer
+  socket.on("game-answer-request", (data) => {
+    console.log(`Answer request from ${socket.id}`);
+    const studentId = data.studentId || socket.id;
+    const student = Array.from(gameState.students.values()).find(
+      (s) => s.socketId === socket.id
+    );
+    
+    // Check if student can answer
+    const canAnswer = student && 
+                     !gameState.currentAnswerer && 
+                     (!gameState.oneStudentPerQuestion || !gameState.studentsWhoAnswered.has(studentId));
+    
+    if (canAnswer) {
+      gameState.currentAnswerer = {
+        studentId: studentId,
+        name: student.name,
+        team: student.team,
+        socketId: socket.id,
+      };
+
+      // If one-student-per-question mode, mark this student as having answered
+      if (gameState.oneStudentPerQuestion) {
+        gameState.studentsWhoAnswered.add(studentId);
+        console.log(`Student ${student.name} marked as answered (one-per-question mode)`);
+      }
+
+      // Notify all clients about the answerer
+      io.emit("student-answering", gameState.currentAnswerer);
+    } else if (gameState.oneStudentPerQuestion && gameState.studentsWhoAnswered.has(studentId)) {
+      // Notify the student they've already answered
+      socket.emit("already-answered", {
+        message: "You have already answered a question in this game session."
+      });
+      console.log(`Student ${student?.name} tried to answer but already answered in one-per-question mode`);
+    }
+  });
+
+  // Teacher starts/stops game
+  socket.on("game-toggle", (isActive) => {
+    console.log(`Game toggled to: ${isActive}`);
+    gameState.isActive = isActive;
+    if (!isActive) {
+      // Reset game state
+      gameState.currentAnswerer = null;
+      gameState.showAnswer = false;
+      gameState.currentQuestion = 0;
+    }
+    io.emit("game-status-change", isActive);
+  });
+
+  // Teacher loads questions
+  socket.on("game-load-questions", (questions) => {
+    console.log(`Loading ${questions.length} questions`);
+    console.log(
+      "First few questions:",
+      questions.slice(0, 3).map((q) => ({ name: q.name, country: q.country }))
+    );
+    gameState.questions = questions;
+    gameState.currentQuestion = -1; // Reset to -1 so next question becomes 0
+    gameState.studentsWhoAnswered.clear(); // Clear answered students
+    io.emit("questions-loaded", questions.length);
+    // Send questions list to teacher
+    io.emit("questions-list", questions.map((q, index) => ({
+      index,
+      name: q.name,
+      country: q.country
+    })));
+  });
+
+  // Teacher shows next question
+  socket.on("game-next-question", () => {
+    gameState.currentQuestion++;
+    if (gameState.currentQuestion < gameState.questions.length) {
+      gameState.currentLandmark =
+        gameState.questions[gameState.currentQuestion];
+      gameState.currentAnswerer = null;
+      gameState.showAnswer = false;
+      gameState.questionStartTime = Date.now();
+
+      console.log(`Displaying question ${gameState.currentQuestion + 1}: ${gameState.currentLandmark.name}`);
+
+      io.emit("question-display", {
+        landmark: gameState.currentLandmark,
+        questionNumber: gameState.currentQuestion + 1,
+        totalQuestions: gameState.questions.length,
+      });
+      
+      // Send updated game state
+      io.emit("game-state", gameState);
+    } else {
+      console.log("No more questions available");
+    }
+  });
+
+  // Teacher shows previous question
+  socket.on("game-previous-question", () => {
+    if (gameState.currentQuestion > 0) {
+      gameState.currentQuestion--;
+      gameState.currentLandmark = gameState.questions[gameState.currentQuestion];
+      gameState.currentAnswerer = null;
+      gameState.showAnswer = false;
+      gameState.questionStartTime = Date.now();
+
+      console.log(`Going back to question ${gameState.currentQuestion + 1}: ${gameState.currentLandmark.name}`);
+
+      io.emit("question-display", {
+        landmark: gameState.currentLandmark,
+        questionNumber: gameState.currentQuestion + 1,
+        totalQuestions: gameState.questions.length,
+      });
+      
+      // Send updated game state
+      io.emit("game-state", gameState);
+    } else {
+      console.log("Already at first question");
+    }
+  });
+
+  // Teacher jumps to specific question
+  socket.on("jump-to-question", (questionIndex) => {
+    console.log(`Jump to question request: ${questionIndex}`);
+    if (questionIndex >= 0 && questionIndex < gameState.questions.length) {
+      gameState.currentQuestion = questionIndex;
+      gameState.currentLandmark = gameState.questions[gameState.currentQuestion];
+      gameState.currentAnswerer = null;
+      gameState.showAnswer = false;
+      gameState.questionStartTime = Date.now();
+
+      console.log(`Jumping to question ${questionIndex + 1}: ${gameState.currentLandmark.name}`);
+
+      io.emit("question-display", {
+        landmark: gameState.currentLandmark,
+        questionNumber: gameState.currentQuestion + 1,
+        totalQuestions: gameState.questions.length,
+      });
+      
+      // Also send updated game state
+      io.emit("game-state", gameState);
+    } else {
+      console.log(`Invalid question index: ${questionIndex}`);
+    }
+  });
+
+  // Teacher requests questions list
+  socket.on("get-questions-list", () => {
+    console.log("Questions list requested");
+    if (gameState.questions.length > 0) {
+      socket.emit("questions-list", gameState.questions);
+    }
+  });
+
+  // Teacher toggles one-student-per-question mode
+  socket.on("toggle-one-student-mode", () => {
+    gameState.oneStudentPerQuestion = !gameState.oneStudentPerQuestion;
+    console.log(`One student per question mode toggled to: ${gameState.oneStudentPerQuestion}`);
+    
+    if (gameState.oneStudentPerQuestion) {
+      gameState.studentsWhoAnswered.clear(); // Reset when enabling
+      console.log("Cleared students who answered list");
+    }
+    
+    io.emit("one-student-mode-toggled", gameState.oneStudentPerQuestion);
+  });
+
+  // Teacher approves/rejects answer
+  socket.on("game-answer-result", (data) => {
+    console.log(`Answer result:`, data);
+    if (gameState.currentAnswerer) {
+      const team = gameState.currentAnswerer.team;
+      if (data.isCorrect) {
+        gameState.teams[team].score += data.points || 1;
+      }
+
+      // Show answer and update scores
+      gameState.showAnswer = true;
+      io.emit("answer-result", {
+        isCorrect: data.isCorrect,
+        points: data.points || 1,
+        correctAnswer: gameState.currentLandmark?.country,
+        answerer: gameState.currentAnswerer,
+        teams: gameState.teams,
+      });
+
+      // Move to next question
+      gameState.currentQuestion++;
+      gameState.currentAnswerer = null;
+
+      // Check if game is finished
+      if (gameState.currentQuestion >= gameState.questions.length) {
+        const sortedTeams = Object.entries(gameState.teams)
+          .sort(([, a], [, b]) => b.score - a.score)
+          .map(([name, data]) => ({ name, ...data }));
+
+        io.emit("game-finished", {
+          results: sortedTeams,
+          winner: sortedTeams[0],
+        });
+      }
+    }
+  });
+
+  // Teacher clears answerer
+  socket.on("game-clear-answerer", () => {
+    gameState.currentAnswerer = null;
+    io.emit("answerer-cleared");
+  });
+
+  // Send game state to joining clients
+  socket.emit("game-state", gameState);
+
   // Handle disconnection
   socket.on("disconnect", () => {
     console.log(`Socket disconnected: ${socket.id}`);
     clients.delete(socket.id);
+
+    // Clean up game state
+    const disconnectedStudent = Array.from(gameState.students.entries()).find(
+      ([, student]) => student.socketId === socket.id
+    );
+
+    if (disconnectedStudent) {
+      const [studentId, student] = disconnectedStudent;
+      console.log(`Student ${student.name} (${student.team}) disconnected`);
+
+      // Remove from students map
+      gameState.students.delete(studentId);
+
+      // Remove from team members
+      if (gameState.teams[student.team]) {
+        gameState.teams[student.team].members = gameState.teams[
+          student.team
+        ].members.filter((member) => member.id !== studentId);
+      }
+
+      // Clear answerer if it was this student
+      if (gameState.currentAnswerer?.studentId === studentId) {
+        gameState.currentAnswerer = null;
+        io.emit("answerer-cleared");
+      }
+
+      // Broadcast updated teams
+      io.emit("teams-updated", gameState.teams);
+    }
+
     io.emit("clientCount", clients.size);
   });
 });
