@@ -21,27 +21,27 @@ export const malawiSlides: MalawiSlide[] = [
     subtitle: "The Warm Heart of Africa",
     icon: "mappin",
     images: [
-      "/placeholder.svg", // Malawi map highlighting location in Africa
-      "/placeholder.svg", // Flag of Malawi
-      "/placeholder.svg", // Welcome sign or airport arrival scene
-      "/placeholder.svg", // Comparison map showing Malawi vs China size
+      "https://maravianwebservices.com/images/photos/cblue/malawi4.gif", // Malawi map highlighting location in Africa
+      "https://files.maravianwebservices.com/paul_photos/malawi/thumbnails/tn_istockphoto-1434636372-612x612.jpg", // Flag of Malawi
+      "https://files.maravianwebservices.com/paul_photos/malawi/thumbnails/tn_maxresdefault.jpg", // Welcome sign or airport arrival scene
+      "https://files.maravianwebservices.com/paul_photos/malawi/thumbnails/tn_City-of-Blantyre-Malawi.jpg", // Comparison map showing Malawi vs China size
     ],
     keyPoints: [
       "Location: Southeast Africa, landlocked country",
       "Population: ~20 million people",
-      "Capital: Lilongwe (political), Blantyre (commercial)",
+      "Capital: Lilongwe, Blantyre (commercial)",
       "Known as 'The Warm Heart of Africa'",
     ],
     practicalTips: [
       "Much smaller than China (similar to Henan province)",
       "English-speaking country (former British colony)",
-      "Peaceful, stable democracy",
+      // "Peaceful, stable democracy",
       "Very different climate and landscape from most of China",
     ],
     culturalComparisons: [
       "Size comparison: Malawi is about 1/80th the size of China",
       "Population density similar to some Chinese provinces",
-      "Democratic government vs one-party system",
+      // "Diffe",
       "Tropical climate vs diverse climate zones in China",
     ],
     questions: [
@@ -67,28 +67,30 @@ export const malawiSlides: MalawiSlide[] = [
     subtitle: "Airport, Immigration, First Steps",
     icon: "plane",
     images: [
-      "/placeholder.svg", // Kamuzu International Airport exterior/interior
-      "/placeholder.svg", // Immigration checkpoint
-      "/placeholder.svg", // Taxi/bus transportation options
-      "/placeholder.svg", // Hotel/accommodation examples
+      "https://files.maravianwebservices.com/paul_photos/malawi/thumbnails/tn_kamuzu-international1.jpg", // Kamuzu International Airport exterior/interior
+      "https://files.maravianwebservices.com/paul_photos/malawi/thumbnails/tn_kamuzu-international.jpg", // Immigration checkpoint
+      "https://files.maravianwebservices.com/paul_photos/malawi/thumbnails/tn_e35ca00a-9ec0-44c3-be56-39984d163209_1280x850.jpg", // Taxi/bus transportation options
+      "https://files.maravianwebservices.com/paul_photos/malawi/thumbnails/tn_sososo.jpg", // Taxi/bus transportation options
+      "https://files.maravianwebservices.com/paul_photos/malawi/thumbnails/tn_capital-7.jpg", // Hotel/accommodation examples
+      "https://files.maravianwebservices.com/paul_photos/malawi/thumbnails/tn_capital3.jpg", // Hotel/accommodation examples
     ],
     keyPoints: [
       "Main entry point: Kamuzu International Airport (Lilongwe)",
-      "Visa requirements for Chinese citizens",
+      // "Visa requirements",
       "Immigration process and documentation",
       "Transportation from airport",
     ],
     practicalTips: [
-      "Visa on arrival available for Chinese citizens",
+      // "Visa on arrival available for Chinese citizens",
       "Yellow fever vaccination certificate required",
       "US Dollar widely accepted alongside Malawian Kwacha",
-      "Limited public transport - plan transfers in advance",
+      "Public transport",
     ],
     culturalComparisons: [
       "Simpler immigration process compared to many countries",
       "English language advantage vs language barriers elsewhere",
-      "Smaller airport scale compared to major Chinese airports",
-      "More personal, less automated processes than China",
+      "Smaller airport scale compared to major airports",
+      // "More personal, less automated processes than China",
     ],
     questions: [
       {
@@ -106,10 +108,10 @@ export const malawiSlides: MalawiSlide[] = [
     subtitle: "Currency, Banking, Cost of Living",
     icon: "dollar",
     images: [
-      "/placeholder.svg", // Malawian Kwacha banknotes and coins
-      "/placeholder.svg", // ATM machines and banks
-      "/placeholder.svg", // Market prices/shopping scenes
-      "/placeholder.svg", // Restaurant price examples
+      "https://files.maravianwebservices.com/paul_photos/malawi/thumbnails/tn_current-malawi-kwacha-banknotes.jpg", // Malawian Kwacha banknotes and coins
+      "https://files.maravianwebservices.com/paul_photos/malawi/thumbnails/tn_20181127t15.png", // ATM machines and banks
+      "https://files.maravianwebservices.com/paul_photos/malawi/232EG2UFWFOGZKWY5MU7G3RECU.avif", // Market prices/shopping scenes
+      "https://files.maravianwebservices.com/paul_photos/malawi/Travel-Africa-local-fish-Malawi-lunch-scaled-1.webp", // Restaurant price examples
     ],
     keyPoints: [
       "Currency: Malawian Kwacha (MWK)",
@@ -118,14 +120,12 @@ export const malawiSlides: MalawiSlide[] = [
       "Cost of living comparison with China",
     ],
     practicalTips: [
-      "Much lower cost of living than major Chinese cities",
-      "Limited ATM network outside cities",
-      "Cash-based economy (unlike China's digital payments)",
-      "Tipping culture exists (unlike most of China)",
+      "Much lower cost of living",
+      "ATM and Bank network",
+      "Cash-based economy (less digital payment)",
     ],
     culturalComparisons: [
       "Cash-based vs China's mobile payment dominance",
-      "Tipping expected vs rare tipping in China",
       "Bartering common in markets vs fixed prices in China",
       "Lower cost of living but also lower average incomes",
     ],
@@ -134,7 +134,7 @@ export const malawiSlides: MalawiSlide[] = [
         question:
           "What are the main differences between Chinese and Malawian payment systems?",
         answer:
-          "Malawi is cash-based with limited digital payments, while China uses mobile payments extensively; tipping is expected in Malawi",
+          "Malawi is cash-based with limited digital payments, while China uses mobile payments extensively",
         type: "comparison",
       },
       {
@@ -152,10 +152,11 @@ export const malawiSlides: MalawiSlide[] = [
     subtitle: "English, Local Languages, Communication Styles",
     icon: "message",
     images: [
-      "/placeholder.svg", // Language learning materials
-      "/placeholder.svg", // People having conversations
-      "/placeholder.svg", // Written signs in English and Chichewa
-      "/placeholder.svg", // Business meeting scenarios
+      "https://files.maravianwebservices.com/paul_photos/malawi/thumbnails/tn_38891892.jpg", // Language learning materials
+      "https://files.maravianwebservices.com/paul_photos/malawi/thumbnails/tn_274251.png", // Written signs in English and Chichewa
+      "https://files.maravianwebservices.com/paul_photos/malawi/thumbnails/tn_MaristSecondarySchool_Malawi2022.jpg", // Business meeting scenarios
+      "https://files.maravianwebservices.com/paul_photos/malawi/thumbnails/tn_W020220616648820771517.png", // Business meeting scenarios
+      "https://files.maravianwebservices.com/paul_photos/malawi/thumbnails/tn_27ed5868-f753-4908-8cb3-c20d4c838cbe_720x450.jpg", // Business meeting scenarios
     ],
     keyPoints: [
       "Official language: English (advantage for students)",
@@ -165,20 +166,17 @@ export const malawiSlides: MalawiSlide[] = [
     ],
     practicalTips: [
       "English proficiency gives significant advantage",
-      "Indirect communication style (similar to Chinese culture)",
       "Respect for elders and hierarchy important",
       "Patience valued over efficiency",
     ],
     culturalComparisons: [
       "English advantage vs language barriers elsewhere",
-      "Indirect communication similar to Chinese culture",
-      "Slower pace of conversation vs rapid Chinese urban communication",
       "More personal relationships needed for business vs transactional Chinese business",
     ],
     questions: [
       {
         question:
-          "Why is English being the official language an advantage for Chinese students?",
+          "Why is English being the official language an advantage for foreign visitors?",
         answer:
           "Eliminates language barriers, easier to conduct business, access education, and navigate daily life compared to countries with only local languages",
         type: "comprehension",
@@ -198,10 +196,11 @@ export const malawiSlides: MalawiSlide[] = [
     subtitle: "Ethnic Diversity, Cultural Understanding",
     icon: "users",
     images: [
-      "/placeholder.svg", // Traditional clothing and ceremonies
-      "/placeholder.svg", // Different ethnic group representatives
-      "/placeholder.svg", // Religious buildings (churches, mosques)
-      "/placeholder.svg", // Cultural festivals and celebrations
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSv5nJTRmsYmZ1nzrUIgtc6Ty3DMeNi5BX3EA&s", // Traditional clothing and ceremonies
+      "https://cdn.shopify.com/s/files/1/0565/1926/2384/files/Malawian_Traditional_Wedding_Styles_1.jpg?v=1621556032", // Different ethnic group representatives
+      "https://www.unesco.org/archives/multimedia/images/3668/keyframe_medium/0999.jpg", // Religious buildings (churches, mosques)
+      "https://www.musicinafrica.net/sites/default/files/styles/article_slider_large/public/images/article/201505/gulewamkuluwwwafricawildtruckcom.jpg?itok=CKqkC_XY", // Cultural festivals and celebrations
+      "https://malawigulf.com/wp-content/uploads/2019/02/Dance2.jpg", // Cultural festivals and celebrations
     ],
     keyPoints: [
       "Major ethnic groups: Chewa, Tumbuka, Yao, Ngoni, others",
@@ -211,7 +210,6 @@ export const malawiSlides: MalawiSlide[] = [
     ],
     practicalTips: [
       "Respect for tribal traditions important",
-      "Christianity dominant (different from China)",
       "Extended family systems strong",
       "Community-oriented society",
     ],
@@ -237,10 +235,10 @@ export const malawiSlides: MalawiSlide[] = [
     subtitle: "Do's and Don'ts, Social Behavior",
     icon: "users",
     images: [
-      "/placeholder.svg", // Professional handshake examples
-      "/placeholder.svg", // Appropriate business attire
-      "/placeholder.svg", // Traditional gift-giving scenes
-      "/placeholder.svg", // Dining/eating scenarios
+      "https://techafricanews.com/wp-content/uploads/2024/09/Malwai-President-PR.jpg", // Professional handshake examples
+      "https://files.maravianwebservices.com/paul_photos/malawi/thumbnails/tn_Bawo.jpg", // Appropriate business attire
+      "https://i0.wp.com/clipkulture.com/wp-content/uploads/2019/12/1577183885g48nk.jpg?fit=789%2C793&ssl=1", // Traditional gift-giving scenes
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLX5b9UIzX7Bw-v1WAekRdVrx0pCE6b1phjA&s", // Dining/eating scenarios
     ],
     keyPoints: [
       "Greeting customs and handshakes",
@@ -250,14 +248,12 @@ export const malawiSlides: MalawiSlide[] = [
     ],
     practicalTips: [
       "Direct eye contact expected (different from Chinese deference)",
-      "Punctuality less strict than China",
       "Personal space preferences",
       "Religious considerations in daily life",
     ],
     culturalComparisons: [
-      "Direct eye contact expected vs Chinese deference to authority",
-      "Flexible time vs strict punctuality in China",
-      "Physical greetings common vs bowing in Chinese culture",
+      "Direct eye contact expected",
+      "Physical greetings common",
       "Religious considerations vs secular business practices",
     ],
     questions: [
@@ -277,101 +273,102 @@ export const malawiSlides: MalawiSlide[] = [
       },
     ],
   },
-  {
-    id: "safety",
-    title: "Safety & Security",
-    subtitle: "Personal Safety, Health, Emergency Procedures",
-    icon: "shield",
-    images: [
-      "/placeholder.svg", // Police stations and emergency services
-      "/placeholder.svg", // Medical facilities/hospitals
-      "/placeholder.svg", // Water purification/safety measures
-      "/placeholder.svg", // Safety equipment (mosquito nets, etc.)
-    ],
-    keyPoints: [
-      "General safety situation",
-      "Health precautions (malaria, water safety)",
-      "Emergency contacts and procedures",
-      "Common scams and how to avoid them",
-    ],
-    practicalTips: [
-      "Malaria prevention essential (unlike China)",
-      "Water safety - bottled/boiled water recommended",
-      "Limited emergency services compared to China",
-      "Strong community safety networks",
-    ],
-    culturalComparisons: [
-      "Malaria risk vs no malaria in most of China",
-      "Water safety concerns vs generally safe tap water in Chinese cities",
-      "Limited emergency services vs extensive Chinese emergency infrastructure",
-      "Community-based safety vs state-based security systems",
-    ],
-    questions: [
-      {
-        question:
-          "What health precautions would you need to take in Malawi that you don't need in China?",
-        answer:
-          "Malaria prevention (mosquito nets, medication), water purification, yellow fever vaccination, tropical disease awareness",
-        type: "comparison",
-      },
-      {
-        question:
-          "How would you prepare for the health challenges of living in Malawi?",
-        answer:
-          "Get required vaccinations, buy malaria prevention supplies, research local hospitals, get travel insurance, pack first aid kit",
-        type: "practical",
-      },
-    ],
-  },
-  {
-    id: "transportation",
-    title: "Travel & Transportation",
-    subtitle: "Getting Around, Transportation Options",
-    icon: "car",
-    images: [
-      "/placeholder.svg", // Matola (minibus) transportation
-      "/placeholder.svg", // Bus stations and terminals
-      "/placeholder.svg", // Road conditions examples
-      "/placeholder.svg", // Bicycle transportation
-    ],
-    keyPoints: [
-      "Public transportation systems",
-      "Taxi and ride-sharing options",
-      "Intercity travel (bus, minibus)",
-      "Road conditions and driving culture",
-    ],
-    practicalTips: [
-      "Limited infrastructure compared to China",
-      "Matola (shared minibus) main public transport",
-      "Road conditions variable",
-      "Walking often necessary",
-    ],
-    culturalComparisons: [
-      "Limited public transport vs extensive Chinese metro/bus systems",
-      "Matola (shared minibus) vs modern Chinese public transport",
-      "Variable road conditions vs modern Chinese highway system",
-      "More walking required vs convenient transport in Chinese cities",
-    ],
-    questions: [
-      {
-        question:
-          "How does the transportation system in Malawi differ from what you're used to in China?",
-        answer:
-          "Less developed infrastructure, shared minibuses instead of metros, more walking required, variable road conditions vs modern Chinese systems",
-        type: "comparison",
-      },
-    ],
-  },
+  // {
+  //   id: "safety",
+  //   title: "Safety & Security",
+  //   subtitle: "Personal Safety, Health, Emergency Procedures",
+  //   icon: "shield",
+  //   images: [
+  //     "/placeholder.svg", // Police stations and emergency services
+  //     "/placeholder.svg", // Medical facilities/hospitals
+  //     "/placeholder.svg", // Water purification/safety measures
+  //     "/placeholder.svg", // Safety equipment (mosquito nets, etc.)
+  //   ],
+  //   keyPoints: [
+  //     "General safety situation",
+  //     "Health precautions (malaria, water safety)",
+  //     "Emergency contacts and procedures",
+  //     "Common scams and how to avoid them",
+  //   ],
+  //   practicalTips: [
+  //     "Malaria prevention essential (unlike China)",
+  //     "Water safety - bottled/boiled water recommended",
+  //     "Limited emergency services compared to China",
+  //     "Strong community safety networks",
+  //   ],
+  //   culturalComparisons: [
+  //     "Malaria risk vs no malaria in most of China",
+  //     "Water safety concerns vs generally safe tap water in Chinese cities",
+  //     "Limited emergency services vs extensive Chinese emergency infrastructure",
+  //     "Community-based safety vs state-based security systems",
+  //   ],
+  //   questions: [
+  //     {
+  //       question:
+  //         "What health precautions would you need to take in Malawi that you don't need in China?",
+  //       answer:
+  //         "Malaria prevention (mosquito nets, medication), water purification, yellow fever vaccination, tropical disease awareness",
+  //       type: "comparison",
+  //     },
+  //     {
+  //       question:
+  //         "How would you prepare for the health challenges of living in Malawi?",
+  //       answer:
+  //         "Get required vaccinations, buy malaria prevention supplies, research local hospitals, get travel insurance, pack first aid kit",
+  //       type: "practical",
+  //     },
+  //   ],
+  // },
+  // {
+  //   id: "transportation",
+  //   title: "Travel & Transportation",
+  //   subtitle: "Getting Around, Transportation Options",
+  //   icon: "car",
+  //   images: [
+  //     "/placeholder.svg", // Matola (minibus) transportation
+  //     "/placeholder.svg", // Bus stations and terminals
+  //     "/placeholder.svg", // Road conditions examples
+  //     "/placeholder.svg", // Bicycle transportation
+  //   ],
+  //   keyPoints: [
+  //     "Public transportation systems",
+  //     "Taxi and ride-sharing options",
+  //     "Intercity travel (bus, minibus)",
+  //     "Road conditions and driving culture",
+  //   ],
+  //   practicalTips: [
+  //     "Limited infrastructure compared to China",
+  //     "Matola (shared minibus) main public transport",
+  //     "Road conditions variable",
+  //     "Walking often necessary",
+  //   ],
+  //   culturalComparisons: [
+  //     "Limited public transport vs extensive Chinese metro/bus systems",
+  //     "Matola (shared minibus) vs modern Chinese public transport",
+  //     "Variable road conditions vs modern Chinese highway system",
+  //     "More walking required vs convenient transport in Chinese cities",
+  //   ],
+  //   questions: [
+  //     {
+  //       question:
+  //         "How does the transportation system in Malawi differ from what you're used to in China?",
+  //       answer:
+  //         "Less developed infrastructure, shared minibuses instead of metros, more walking required, variable road conditions vs modern Chinese systems",
+  //       type: "comparison",
+  //     },
+  //   ],
+  // },
   {
     id: "food",
     title: "Food & Dining Culture",
     subtitle: "Local Cuisine, Dining Customs, Food Safety",
     icon: "utensils",
     images: [
-      "/placeholder.svg", // Traditional Malawian dishes (nsima, relish)
-      "/placeholder.svg", // Local markets with fresh produce
-      "/placeholder.svg", // Restaurant dining scenes
-      "/placeholder.svg", // Street food vendors
+      "https://images.food52.com/qwZz0V9i7vYhwGwS78mPR1ybZD8=/96d1952b-1ab6-4c21-bdcb-8bbe4e25c678--2020-0403_malawian-chicken-curry-nsima_3x2_james-ransom-073.jpg", // Traditional Malawian dishes (nsima, relish)
+      "https://tellerrandstories.de/wp-content/uploads/2023/05/img_6713-eyeturner-georg-berg-1024x768.jpg", // Local markets with fresh produce
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRuHjts5tfDlq56aWSk6x12FA7g9qSgUYZ7Cg&s", // Restaurant dining scenes
+      "https://i.ytimg.com/vi/plTuQbf8qwM/sddefault.jpg", // Street food vendors
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdq7nZWjRvr0x3V5xuf3OtH2dGyupOzpDFdg&s", // Street food vendors
     ],
     keyPoints: [
       "Staple foods: nsima (maize porridge), vegetables, fish",
@@ -381,15 +378,13 @@ export const malawiSlides: MalawiSlide[] = [
     ],
     practicalTips: [
       "Very different from Chinese cuisine",
-      "Limited spice variety compared to China",
-      "Fresh ingredients but limited variety",
+      "Fresh ingredients",
       "Communal eating customs",
     ],
     culturalComparisons: [
       "Nsima (maize) staple vs rice staple in China",
       "Less diverse cuisine vs varied Chinese regional cuisines",
       "Communal eating vs individual portions in modern China",
-      "Limited spices vs complex Chinese spice usage",
     ],
     questions: [
       {
@@ -407,10 +402,14 @@ export const malawiSlides: MalawiSlide[] = [
     subtitle: "Must-See Places, Cultural Sites",
     icon: "landmark",
     images: [
-      "/placeholder.svg", // Lake Malawi scenic views
-      "/placeholder.svg", // Wildlife photos (elephants, antelope)
-      "/placeholder.svg", // Historical buildings and museums
-      "/placeholder.svg", // Traditional markets and crafts
+      "https://maravianwebservices.com/images/photos/cblue/malawi3.png", // Lake Malawi scenic views
+      "https://maravianwebservices.com/images/photos/cblue/malawi1.png", // Wildlife photos (elephants, antelope)
+      "https://www.malawianstyle.com/wp-content/uploads/2024/11/Mulanje-Mountain.jpeg", // Historical buildings and museums
+      "https://www.expertafrica.com/images/country/0090ab5afe1340c789fa2ebc1c348b96-400-lq.jpg", // Traditional markets and crafts
+      "https://www.goeco.org/wp-content/uploads/2020/07/volunteer-review-from-Malawi-Holly1-1024x660.jpg", // Traditional markets and crafts
+      "https://www.malawitourism.com/wp-content/uploads/2018/12/Game-drive-with-elephants-Dana-Allen-1920x720.jpg", // Traditional markets and crafts
+      "https://images.squarespace-cdn.com/content/v1/66ec3b49803ab81bf84f89e4/2b0fef79-bec8-4126-9a6c-284687c60c7d/LionFamilyPlanning.jpg", // Traditional markets and crafts
+      "https://12travelafrica.com/wp-content/uploads/2021/04/Safari-dieren-in-Malawi-zebras-scaled.jpg", // Traditional markets and crafts
     ],
     keyPoints: [
       "Lake Malawi (UNESCO World Heritage)",
