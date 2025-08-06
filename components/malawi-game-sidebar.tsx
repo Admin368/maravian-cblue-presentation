@@ -315,7 +315,7 @@ export default function MalawiGameSidebar({
 
                   {/* Questions from Selected Slide */}
                   {currentSlideData && currentSlideData.questions && (
-                    <div className="space-y-3">
+                    <div className="space-y-3 text-white">
                       <h4 className="text-sm font-medium text-gray-300">
                         Available Questions:
                       </h4>
@@ -324,9 +324,7 @@ export default function MalawiGameSidebar({
                           key={index}
                           className="bg-slate-700/50 p-3 rounded-lg border border-slate-600"
                         >
-                          <p className="text-sm text-gray-300 mb-2">
-                            {question.question}
-                          </p>
+                          <p className="text-sm mb-2">{question.question}</p>
                           <div className="flex items-center justify-between">
                             <span
                               className={`text-xs px-2 py-1 rounded-full ${getQuestionTypeColor(

@@ -433,7 +433,7 @@ export default function MalawiQuestionsModal({
                       Available Questions
                     </span>
                   </div>
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                  <div className="space-y-3 max-h-96 overflow-y-auto text-white">
                     {currentSlideData?.questions?.map((question, index) => {
                       const isCurrentQuestion =
                         gameState.currentQuestion?.slideIndex ===
@@ -450,7 +450,7 @@ export default function MalawiQuestionsModal({
                           }`}
                         >
                           {isCurrentQuestion && (
-                            <div className="absolute top-2 right-2">
+                            <div className="absolute top-3 right-20">
                               <span className="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold">
                                 ACTIVE
                               </span>

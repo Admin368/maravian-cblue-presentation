@@ -34,7 +34,7 @@ export default function MalawiNav() {
         "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600",
     },
     {
-      href: "/game",
+      href: "/game/home",
       label: "Guess the Country",
       icon: Trophy,
       className:
